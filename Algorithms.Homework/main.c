@@ -18,9 +18,18 @@ void Switch_Lesson2(int selected);
 Menu NewMainMenu();
 void TurnMenu_lesson1(Menu* this);
 void TurnMenu_lesson2(Menu* this);
+void TurnMenu_lesson3(Menu* this);
+void TurnMenu_lesson4(Menu* this);
+void TurnMenu_lesson5(Menu* this);
+void TurnMenu_lesson6(Menu* this);
+void TurnMenu_lesson7(Menu* this);
+void TurnMenu_lesson8(Menu* this);
 
-void OldMenu_Lesson1(void);
+void OldMenu_CommandLine(Menu StartMenu);
+void OldMenu_print(Menu* running);
+void OldMenu_Lessons_print(void);
 void OldMenu_Lesson1_print(void);
+void OldMenu_Lesson2_print(void);
 
 
 struct menu {
@@ -31,7 +40,7 @@ struct menu {
 
 int main(int argc, char* argv[]) {
 	setlocale(LC_ALL, "Russian");
-	//OldMenu_Lesson1();
+	//OldMenu_CommandLine(NewMainMenu());
 	NewMenu(NewMainMenu());
 	return 0;
 }
@@ -95,6 +104,12 @@ void SwitchLessons(Menu* running) {
 	switch (running ->selected) {
 	case 1: TurnMenu_lesson1(running); break;
 	case 2: TurnMenu_lesson2(running); break;
+	//case 3: TurnMenu_lesson3(running); break;
+	//case 4: TurnMenu_lesson4(running); break;
+	//case 5: TurnMenu_lesson5(running); break;
+	//case 6: TurnMenu_lesson6(running); break;
+	//case 7: TurnMenu_lesson7(running); break;
+	//case 8: TurnMenu_lesson8(running); break;
 	}
 }
 
@@ -111,11 +126,11 @@ void Switch_Lesson1(int selected) {
 }
 
 void Switch_Lesson2(int selected) {
-	//switch (*selected) {
-	//case 1: Task_2_1(); break;
-	//case 2: Task_2_2(); break;
-	//case 3: Task_2_3(); break;
-	//}
+	switch (selected) {
+	case 1: Task_2_1(); break;
+	case 2: Task_2_2(); break;
+	case 3: Task_2_3(); break;
+	}
 }
 
 
@@ -155,15 +170,73 @@ void TurnMenu_lesson1(Menu* this) {
 void TurnMenu_lesson2(Menu* this) {
 	this->ReadyToTerminate = false;
 	this->selected = 1;
-	this->lastline = 1;
+	this->lastline = 4;
 	this->MenuLines[0] = "Занятие второе:";
-	//this->MenuLines[1] = "2-1. .";
-	//this->MenuLines[2] = "2-2. .";
-	//this->MenuLines[3] = "2-3. .";
-	this->MenuLines[1] = "Назад в главное меню.";
+	this->MenuLines[1] = "2-1. Перевод из десятичной системы в двоичную.";
+	this->MenuLines[2] = "2-2. Возведение числа a в степень b.";
+	this->MenuLines[3] = "2-3. Исполнитель Калькулятор.";
+	this->MenuLines[4] = "Назад в главное меню.";
 }
 
+void TurnMenu_lesson3(Menu* this) {}
+void TurnMenu_lesson4(Menu* this) {}
+void TurnMenu_lesson5(Menu* this) {}
+void TurnMenu_lesson6(Menu* this) {}
+void TurnMenu_lesson7(Menu* this) {}
+void TurnMenu_lesson8(Menu* this) {}
 
+
+
+void OldMenu_CommandLine(Menu StartMenu) {
+	int input;
+	Menu RunningMenu = StartMenu;
+
+	do {
+		system("cls");
+		OldMenu_print(&RunningMenu);
+		scanf("%i", &input);
+
+		if (0 < input && input <= RunningMenu.lastline) {
+			RunningMenu.selected = input;
+			MenuEnter(&RunningMenu);
+		}
+		else if (input == 0) {
+			if (RunningMenu.ReadyToTerminate)
+				break;
+			else
+				RunningMenu = NewMainMenu();
+		}
+		else {
+			printf("ошибка ввода\n");
+		}
+
+	} while (1);
+
+	printf("завершение работы\n");
+	return 0;
+}
+
+void OldMenu_print(Menu* running) {
+	if (running->MenuLines[0] == "Практическая часть курса:") {
+		OldMenu_Lessons_print();
+	}
+	else if (running->MenuLines[0] == "Занятие первое:") {
+		OldMenu_Lesson1_print();
+	}
+	else if (running->MenuLines[0] == "Занятие второе:") {
+		OldMenu_Lesson2_print();
+	}
+	else {
+		printf("что-то пошло не так :(\n");
+	}
+}
+
+void OldMenu_Lessons_print() {
+	printf("Практическая часть курса:");
+	printf("\n  Занятие 1. Простые алгоритмы;");
+	printf("\n  Занятие 2. Асимптотическая сложность. Рекурсия;");
+	printf("\nВведите номер занятия (\'0\' - выход): ");
+}
 
 void OldMenu_Lesson1_print() {
 	printf("Практическая часть первого занятия:");
@@ -171,55 +244,16 @@ void OldMenu_Lesson1_print() {
 	printf("\n  2) максимальное из четырех чисел;");
 	printf("\n  3) обмен целочисленными значениями;");
 	printf("\n  4) решение квадратного уравнения;");
-	printf("\n  7) цвета шахматных клеток;");
-	printf("\n 13) случайные числа от одного до ста;");
-	printf("\n 14) автоморфные числа.");
-	printf("\nВведите номер задания (\'0\' для выхода): ");
+	printf("\n  5) цвета шахматных клеток;");
+	printf("\n  6) случайные числа от одного до ста;");
+	printf("\n  7) автоморфные числа.");
+	printf("\nВведите номер задания (\'0\' - назад): ");
 }
 
-void OldMenu_Lesson1() {
-	int sel;
-	do {
-		OldMenu_Lesson1_print();
-		scanf("%i", &sel);
-
-		switch (sel) {
-		case 1:
-			printf("\n\tИндекс массы тела.\n\n");
-			Task_1_1();
-			break;
-		case 2:
-			printf("\n\tМаксимальное из четырех чисел.\n\n");
-			Task_1_2();
-			break;
-		case 3:
-			printf("\n\tОбмен целочисленными значениями.\n\n");
-			Task_1_3();
-			break;
-		case 4:
-			printf("\n\tРешение квадратного уравнения.\n\n");
-			Task_1_4();
-			break;
-		case 7:
-			printf("\n\tЦвета шахматных клеток.\n\n");
-			Task_1_7();
-			break;
-		case 13:
-			printf("\n\tСлучайные числа от одного до ста.\n\n");
-			Task_1_13();
-			break;
-		case 14:
-			printf("\n\tАвтоморфные числа.\n\n");
-			Task_1_14();
-			break;
-		case 0:
-			printf("завершение работы");
-			break;
-		default:
-			printf("ошибка ввода");
-		}
-		getch();
-		system("cls");
-	} while (sel != 0);
-	return 0;
+void OldMenu_Lesson2_print() {
+	printf("Практическая часть второго занятия:");
+	printf("\n  1) перевод из десятичной системы в двоичную;");
+	printf("\n  2) возведение числа a в степень b;");
+	printf("\n  3) исполнитель Калькулятор;");
+	printf("\nВведите номер задания (\'0\' - назад): ");
 }
