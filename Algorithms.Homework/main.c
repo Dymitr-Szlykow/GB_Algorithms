@@ -170,12 +170,12 @@ void TurnMenu_lesson1(Menu* this) {
 void TurnMenu_lesson2(Menu* this) {
 	this->ReadyToTerminate = false;
 	this->selected = 1;
-	this->lastline = 4;
+	this->lastline = 3;
 	this->MenuLines[0] = "Занятие второе:";
 	this->MenuLines[1] = "2-1. Перевод из десятичной системы в двоичную.";
 	this->MenuLines[2] = "2-2. Возведение числа a в степень b.";
-	this->MenuLines[3] = "2-3. Исполнитель Калькулятор.";
-	this->MenuLines[4] = "Назад в главное меню.";
+	//this->MenuLines[3] = "2-3. Исполнитель Калькулятор.";
+	this->MenuLines[3] = "Назад в главное меню.";
 }
 
 void TurnMenu_lesson3(Menu* this) {}
@@ -227,7 +227,7 @@ void OldMenu_print(Menu* running) {
 		OldMenu_Lesson2_print();
 	}
 	else {
-		printf("что-то пошло не так :(\n");
+		printf("не разобрал. какое занятие? :(\n");
 	}
 }
 
@@ -254,6 +254,6 @@ void OldMenu_Lesson2_print() {
 	printf("Практическая часть второго занятия:");
 	printf("\n  1) перевод из десятичной системы в двоичную;");
 	printf("\n  2) возведение числа a в степень b;");
-	printf("\n  3) исполнитель Калькулятор;");
+	//printf("\n  3) исполнитель Калькулятор;");
 	printf("\nВведите номер задания (\'0\' - назад): ");
 }
