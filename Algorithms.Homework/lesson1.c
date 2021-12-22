@@ -82,10 +82,10 @@ void Task_1_1() {
 			printf(" выраженный дефицит массы тела.");
 		else
 			printf(" указывает на недостаточную (дефицит) массу тела.");
-		printf("\nДля вас желательная масса тела от %.2lf до %.2lf кг. Вам следует поправиться на %.2lf кг.", reqWeightMin, reqWeightMax, reqWeightMin - bodyWeight);
+		printf("\nДля вас желательная масса тела от %.2lf до %.2lf кг. Вам следует поправиться на %.2lf кг.\n", reqWeightMin, reqWeightMax, reqWeightMin - bodyWeight);
 	}
 	else if (bmIndex <= 25)
-		printf(" в норме.");
+		printf(" в норме.\n");
 	else {
 		if (bmIndex <= 30)
 			printf(" указывает на избыточную массу тела (предожирение).");
@@ -95,7 +95,7 @@ void Task_1_1() {
 			printf(" ожирение 2 степени.");
 		else
 			printf(" ожирение 3 степени.");
-		printf("\nДля вас желательная масса тела от %.2lf до %.2lf кг. Вам следует похудеть на %.2lf кг.", reqWeightMin, reqWeightMax, bodyWeight - reqWeightMax);
+		printf("\nДля вас желательная масса тела от %.2lf до %.2lf кг. Вам следует похудеть на %.2lf кг.\n", reqWeightMin, reqWeightMax, bodyWeight - reqWeightMax);
 	}
 }
 
