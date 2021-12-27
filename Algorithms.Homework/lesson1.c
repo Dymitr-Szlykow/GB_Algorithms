@@ -11,40 +11,40 @@
 #define false 0
 
 
-void Task_1_1(void);
+inline void Task_1_1(void);
 
-void Task_1_2(void);
-void Task_1_2a(void);
-void Task_1_2b(void);
-double GreatestOfFour_ReverseTree(double a, double b, double c, double d);
-double GreatestOfFour_HeadOn(double a, double b, double c, double d);
-void ReadGreaterNum(char* message, double* res);
+inline void Task_1_2(void);
+inline void Task_1_2a(void);
+inline void Task_1_2b(void);
+inline double GreatestOfFour_ReverseTree(double a, double b, double c, double d);
+inline double GreatestOfFour_HeadOn(double a, double b, double c, double d);
+inline void ReadGreaterNum(char* message, double* res);
 
-void Task_1_3(void);
-void Swap_withTemp(int* x, int* y);
-void Swap_sum(int* x, int* y);
-void SwapIntegers_binary(int* x, int* y);
+inline void Task_1_3(void);
+inline void Swap_withTemp(int* x, int* y);
+inline void Swap_sum(int* x, int* y);
+inline void SwapIntegers_binary(int* x, int* y);
 
-void Task_1_4(void);
+inline void Task_1_4(void);
 typedef struct coefs Coefs;
-char* SqEquation_print(Coefs c);
-int SqEquation_solve(Coefs c, double* x1, double* x2, double* D);
+inline char* SqEquation_print(Coefs c);
+inline int SqEquation_solve(Coefs c, double* x1, double* x2, double* D);
 
-void Task_1_7(void);
+inline void Task_1_7(void);
 typedef struct chessCell ChessCell;
-ChessCell NewCell(unsigned int rank, unsigned int file);
-ChessCell ReadCell(char* message);
-char* CellColor_ToString(ChessCell c);
+inline ChessCell NewCell(unsigned int rank, unsigned int file);
+inline ChessCell ReadCell(char* message);
+inline char* CellColor_ToString(ChessCell c);
 
-void Task_1_13(void);
-void Task_1_13a(int count);
-void Task_1_13b(int count);
-int GetSystemRand(int digits);
-void BootMyRand(unsigned int starter);
-int GetMyRand(void);
+inline void Task_1_13(void);
+inline void Task_1_13a(int count);
+inline void Task_1_13b(int count);
+inline int GetSystemRand(int digits);
+inline void BootMyRand(unsigned int starter);
+inline int GetMyRand(void);
 
-void Task_1_14(void);
-bool IfAutomorph(int num);
+inline void Task_1_14(void);
+inline bool IsAutomorph(int num);
 
 
 struct coefs {
@@ -58,7 +58,7 @@ struct chessCell {
 
 
 /// <summary>
-/// Ввести вес и рост человека. Рассчитать и вывести индекс массы тела по формуле I=m/(h*h); где m-масса тела в килограммах, h - рост в метрах.
+/// 1. Ввести вес и рост человека. Рассчитать и вывести индекс массы тела по формуле I=m/(h*h); где m-масса тела в килограммах, h - рост в метрах.
 /// </summary>
 void Task_1_1() {
 	double bodyHeight, bodyWeight, temp;
@@ -101,7 +101,7 @@ void Task_1_1() {
 
 
 /// <summary>
-/// Найти максимальное из четырех чисел. Массивы не использовать.
+/// 2. Найти максимальное из четырех чисел. Массивы не использовать.
 /// </summary>
 void Task_1_2() {
 	Task_1_2a();
@@ -157,9 +157,9 @@ void ReadGreaterNum(char* message, double* res) {
 
 
 /// <summary>
-/// Написать программу обмена значениями двух целочисленных переменных:
-/// a. с использованием третьей переменной;
-/// b. *без использования третьей переменной.
+/// 3. Написать программу обмена значениями двух целочисленных переменных:
+/// a) с использованием третьей переменной;
+/// b) *без использования третьей переменной.
 /// </summary>
 void Task_1_3() {
 	int a, b;
@@ -196,7 +196,7 @@ void SwapIntegers_binary(int* x, int* y) {
 
 
 /// <summary>
-/// Написать программу нахождения корней заданного квадратного уравнения.
+/// 4. Написать программу нахождения корней заданного квадратного уравнения.
 /// </summary>
 void Task_1_4() {
 	double x1, x2, D;
@@ -276,7 +276,8 @@ int SqEquation_solve(Coefs c, double* x1, double* x2, double* D)
 
 
 /// <summary>
-/// С клавиатуры вводятся числовые координаты двух полей шахматной доски (x1,y1,x2,y2). Требуется определить, относятся поля к одному цвету или нет.
+/// 7. С клавиатуры вводятся числовые координаты двух полей шахматной доски (x1,y1,x2,y2).
+/// Требуется определить, относятся поля к одному цвету или нет.
 /// </summary>
 void Task_1_7() {
 	ChessCell c1 = ReadCell("первой клетки");
@@ -328,7 +329,7 @@ ChessCell ReadCell(char* message) {
 
 
 /// <summary>
-/// Написать функцию, генерирующую случайное число от 1 до 100.
+/// 13. Написать функцию, генерирующую случайное число от 1 до 100.
 /// а) с использованием стандартной функции rand()
 /// б) без использования стандартной функции rand()
 /// </summary>
@@ -380,7 +381,7 @@ int GetMyRand() {
 
 
 /// <summary>
-/// Автоморфные числа. Натуральное число называется автоморфным, если оно равно последним цифрам своего квадрата. Например, 252 = 625.
+/// 14. Автоморфные числа. Натуральное число называется автоморфным, если оно равно последним цифрам своего квадрата. Например, 252 = 625.
 /// Напишите программу, которая вводит натуральное число N и выводит на экран все автоморфные числа, не превосходящие N.
 /// </summary>
 void Task_1_14() {
@@ -390,12 +391,12 @@ void Task_1_14() {
 
 	printf("автоморфные числа меньше введенного:\n");
 	for (num = 1; num < upto; num++) {
-		if (IfAutomorph(num))
+		if (IsAutomorph(num))
 			printf(" %lu ^2 = %.0lf \n", num, pow(num, 2));
 	}
 }
 
-bool IfAutomorph(int num) {
+bool IsAutomorph(int num) {
 	long int sq;
 	sq = pow(num, 2);
 	while (num) {
