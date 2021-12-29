@@ -19,7 +19,7 @@ inline void CurrentReport(int* arr, int count);
 inline void RunLesson3(void);
 inline void Lesson3_part1_simpleSorting(void);
 inline void Lesson3_part2_insertion(void);
-inline ObserveParams RunSorting(int (*sorting)(int*,int,int(*)(int,int)));
+inline ObserveParams RunSorting(int (*sorting)(int*,int,int(*)(const void*, const void*)));
 inline void RunSearchTest(int* arr, int count, int search, int(*SearchMethod)(int*, int, int));
 
 inline int* InitNewArray(int count);
@@ -178,7 +178,7 @@ void ResetObserveParams() {
 /// <param name="task">- функция сортировки</param>
 /// <param name="presentation">- сообщение для представления массива при выводе</param>
 /// <returns>параметры наблюдения для оценок сортировки</returns>
-ObserveParams RunSorting(int (*sorting)(int*,int,int(*)(int,int))) {
+ObserveParams RunSorting(int (*sorting)(int*,int,int(*)(const void*, const void*))) {
 	ResetObserveParams();
 	int* runningArr = GetArrayCopy(_SourceArray, _ArraySize);
 	int searchtest = rand() % 100;
@@ -256,7 +256,7 @@ void PrintArray(char* presentation, int* arr, int count) {
 
 /// <summary>текущий отчет во время сортировки</summary>
 void CurrentReport(int* arr, int count) {
-	printf("  ход %2d,", _observer.sorting_OuterCycleCounter, _observer.sorting_InnerCycleConter);
+	printf("  ход %2d,", _observer.sorting_OuterCycleCounter);
 	printf(" сравн %3d,", _observer.compareCounter - _observer.compareLast);
 	printf(" обм %2d", _observer.swapCounter - _observer.swapLast);
 	PrintArray("", arr, count);
@@ -287,9 +287,9 @@ int compare_int_desc(const void* left, const void* right) {
 void swap_bytewise(void* arr, int index1, int index2, size_t elSize) {
 	int byte;
 	for (byte = 0; byte < elSize; byte++) {
-		*((unsigned char*)arr + index1 * elSize + byte) ^= *((unsigned char*)arr + index2 * elSize + byte);
-		*((unsigned char*)arr + index2 * elSize + byte) ^= *((unsigned char*)arr + index1 * elSize + byte);
-		*((unsigned char*)arr + index1 * elSize + byte) ^= *((unsigned char*)arr + index2 * elSize + byte);
+		*((char*)arr + index1 * elSize + byte) ^= *((char*)arr + index2 * elSize + byte);
+		*((char*)arr + index2 * elSize + byte) ^= *((char*)arr + index1 * elSize + byte);
+		*((char*)arr + index1 * elSize + byte) ^= *((char*)arr + index2 * elSize + byte);
 	}
 }
 
@@ -317,7 +317,7 @@ void sort_bubble_simple_observed(int* arr, int count, int (*predicate)(int,int))
 
 			_observer.compareCounter++;
 			_observer.ifCounter++;
-			if (predicate(arr + pos, arr + pos + 1) > 0) {
+			if (predicate(arr + pos, arr + pos + 1) == 1) {
 				_observer.assignCounter++;
 				wrongPositions++;
 
@@ -337,7 +337,7 @@ void sort_bubble_simple_observed(int* arr, int count, int (*predicate)(int,int))
 			if (wrongPositions == 0) printf("  перестановок не произведено - считать массив сортированным\n");
 		}
 
-		_observer.ifCounter++;
+		_observer.ifCounter += 2;
 		if (startIndex >= endIndex) break;
 		if (wrongPositions == 0) break;
 	}
@@ -354,7 +354,7 @@ void sort_bubble_simple(void* arr, int count, size_t elSize, int (*predicate)(co
 	for (startIndex = 0; startIndex != endIndex && wrongPositions != 0; endIndex--) {
 		wrongPositions = 0;
 		for (pos = startIndex; pos < endIndex; pos++) {
-			if (predicate((char*)arr + pos * elSize, (char*)arr + (pos + 1) * elSize) > 0)
+			if (predicate((char*)arr + pos * elSize, (char*)arr + (pos + 1) * elSize) == 1)
 				wrongPositions++;
 				swap_bytewise(arr, pos, pos + 1, elSize);
 		}
@@ -389,7 +389,7 @@ void sort_shaker_simple_observed(int* arr, int count, int (*predicate)(int, int)
 
 				_observer.compareCounter++;
 				_observer.ifCounter++;
-				if (predicate(arr + pos, arr + pos + 1) > 0) {
+				if (predicate(arr + pos, arr + pos + 1) == 1) {
 					_observer.assignCounter++;
 					wrongPositions++;
 
@@ -439,7 +439,7 @@ void sort_shaker_simple_observed(int* arr, int count, int (*predicate)(int, int)
 			if (wrongPositions == 0) printf("  перестановок не произведено - считать массив сортированным\n");
 		}
 
-		_observer.ifCounter++;
+		_observer.ifCounter += 2;
 		if (leftIndex >= rightIndex) break;
 		if (wrongPositions == 0) break;
 	}
@@ -547,7 +547,7 @@ void sort_bubble_trail_observed(int* arr, int count, int (*predicate)(int, int))
 			if (wrongPositions == 0) printf("  перестановок не произведено - считать массив сортированным\n");
 		}
 
-		_observer.ifCounter++;
+		_observer.ifCounter += 2;
 		if (startIndex >= endIndex) break;
 		if (wrongPositions == 0) break;
 	}

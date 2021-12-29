@@ -4,6 +4,7 @@
 #include "lesson1.c"
 #include "lesson2.c"
 #include "lesson3.c"
+#include "lesson4.c"
 
 #define bool int
 #define true 1
@@ -16,6 +17,7 @@ void MenuEnter(Menu* running);
 inline void SwitchLessons(Menu* running);
 inline void Switch_Lesson1(Menu* running);
 inline void Switch_Lesson2(Menu* running);
+inline void Switch_Lesson4(Menu* running);
 void RunTask(void (*task)(void), char* header);
 
 Menu NewMainMenu();
@@ -94,6 +96,7 @@ void MenuEnter(Menu* running) {
 	case 0: SwitchLessons(running); break;
 	case 1: Switch_Lesson1(running); break;
 	case 2: Switch_Lesson2(running); break;
+	case 4: Switch_Lesson4(running); break;
 	}
 }
 
@@ -103,7 +106,7 @@ void SwitchLessons(Menu* running) {
 	case 1: TurnMenu_lesson1(running); break;
 	case 2: TurnMenu_lesson2(running); break;
 	case 3: RunTask(RunLesson3, running->MenuLines[running->selected]); break;
-	//case 4: TurnMenu_lesson4(running); break;
+	case 4: TurnMenu_lesson4(running); break;
 	//case 5: TurnMenu_lesson5(running); break;
 	//case 6: TurnMenu_lesson6(running); break;
 	//case 7: TurnMenu_lesson7(running); break;
@@ -133,6 +136,16 @@ void Switch_Lesson2(Menu* running) {
 	}
 }
 
+/// <summary>переключение задания из меню четвертого урока</summary>
+void Switch_Lesson4(Menu* running) {
+	switch (running->selected) {
+	case 1: RunTask(Task_4_1, running->MenuLines[running->selected]); break;
+	case 2: RunTask(Task_4_2, running->MenuLines[running->selected]); break;
+	case 3: RunTask(test_PointerAriphmetics, running->MenuLines[running->selected]); break;
+	//case 3: RunTask(Task_2_3, running->MenuLines[running->selected]); break;
+	}
+}
+
 /// <summary>осуществляет переход от меню к представлению задания</summary>
 void RunTask(void (*task)(void), char* header) {
 	system("cls");
@@ -148,17 +161,17 @@ Menu NewMainMenu() {
 	Menu res;
 	res.code = 0;
 	res.selected = 1;
-	res.lastline = 4;
+	res.lastline = 5;
 	res.MenuLines[0] = "Практическая часть курса:";
 	res.MenuLines[1] = "Занятие 1. Простые алгоритмы.";
 	res.MenuLines[2] = "Занятие 2. Асимптотическая сложность. Рекурсия.";
 	res.MenuLines[3] = "Занятие 3. Поиск в массиве. Простые сортировки.";
-	//res.MenuLines[4] = "Занятие 4. Динамическое программирование. Поиск возвратом.";
+	res.MenuLines[4] = "Занятие 4. Динамическое программирование. Поиск возвратом.";
 	//res.MenuLines[5] = "Занятие 5. Динамические структуры данных.";
 	//res.MenuLines[6] = "Занятие 6. Деревья.";
 	//res.MenuLines[7] = "Занятие 7. Графы. Алгоритмы на графах.";
 	//res.MenuLines[8] = "Занятие 8. Сложные сортировки.";
-	res.MenuLines[4] = "Выход.";
+	res.MenuLines[5] = "Выход.";
 	return res;
 }
 
@@ -190,7 +203,18 @@ void TurnMenu_lesson2(Menu* this) {
 	this->MenuLines[3] = "Назад в главное меню.";
 }
 
-void TurnMenu_lesson4(Menu* this) {}
+void TurnMenu_lesson4(Menu* this) {
+	this->code = 4;
+	this->selected = 1;
+	this->lastline = 4;
+	this->MenuLines[0] = "Занятие четвертое:";
+	this->MenuLines[1] = "4-1. Подсчет количества маршрутов с препятствиями.";
+	this->MenuLines[2] = "4-2. Нахождение длины максимальной последовательности.";
+	//this->MenuLines[3] = "4-3. Исполнитель Калькулятор.";
+	this->MenuLines[3] = "test. Арифметика указателей.";
+	this->MenuLines[4] = "Назад в главное меню.";
+}
+
 void TurnMenu_lesson5(Menu* this) {}
 void TurnMenu_lesson6(Menu* this) {}
 void TurnMenu_lesson7(Menu* this) {}
