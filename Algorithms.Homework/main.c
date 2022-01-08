@@ -217,11 +217,12 @@ void TurnMenu_lesson5(Menu* this) {
 	this->MenuLines[1] = "5-1. Перевод в двоичную систему с использованием стека.";
 	this->MenuLines[2] = "5-3. Проверка скобочной последовательности.";
 	this->MenuLines[3] = "5-4. Test: linked list, копирование односвязного списка.";
-	//this->MenuLines[4] = "5-5. Перевод из инфиксной записи арифметического выражения в постфиксную.";
-	//this->MenuLines[5] = "5-6. Test: queue.";
-	this->MenuLines[4] = "test: List (dynamic array).";
-	this->MenuLines[5] = "Назад в главное меню.";
-	this->lastline = 5;
+	this->MenuLines[4] = "5-5. Перевод из инфиксной записи арифметического выражения в постфиксную.";
+	this->MenuLines[5] = "5-6. Test: queue, на основе связного списка.";
+	this->MenuLines[6] = "5-6. Test: queue, на основе массива.";
+	this->MenuLines[7] = "test: List (dynamic array).";
+	this->MenuLines[8] = "Назад в главное меню.";
+	this->lastline = 8;
 }
 /// <summary>переключение задания из меню пятого урока</summary>
 void Switch_Lesson5(Menu* running) {
@@ -229,7 +230,10 @@ void Switch_Lesson5(Menu* running) {
 	case 1: RunTask(Task_5_1, running->MenuLines[running->selected]); break;
 	case 2: RunTask(Task_5_3, running->MenuLines[running->selected]); break;
 	case 3: RunTask(Task_5_4, running->MenuLines[running->selected]); break;
-	case 4: RunTask(test_DynamicList, running->MenuLines[running->selected]); break;
+	case 4: RunTask(Task_5_5, running->MenuLines[running->selected]); break;
+	case 5: RunTask(test_QueueLinked, running->MenuLines[running->selected]); break;
+	case 6: RunTask(test_QueueArray, running->MenuLines[running->selected]); break;
+	case 7: RunTask(test_DynamicList, running->MenuLines[running->selected]); break;
 	}
 }
 

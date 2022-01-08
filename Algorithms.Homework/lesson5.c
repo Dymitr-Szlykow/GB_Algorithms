@@ -1,3 +1,5 @@
+#include <conio.h>
+#include <ctype.h>
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +15,8 @@ typedef struct node Node;
 typedef struct list List;
 typedef struct linkedList LinkedList;
 typedef struct stack Stack;
+typedef struct queue Queue;
+typedef struct queueArr QueueArr;
 
 inline void Task_5_1(void);
 inline void Print_AsBinary_stack(int number);
@@ -27,14 +31,24 @@ inline LinkedList* InitNewLinkedList(size_t valSize, unsigned int count);
 inline void PrintNodeChain(Node* head);
 
 inline void Task_5_5(void);
-inline void Task_5_6(void);
+inline int Print_PostfixNotation(char* expression);
+inline int PrintPostfix_ProcessSubstring_Recursive(char* position);
+inline int PrintPostfix_UnloadStack(Stack* stack);
+inline void PrintPostfix_UnloadUntilLowPrecedence(Stack* stack);
+
+//inline void Task_5_6(void);
+inline void test_QueueLinked(void);
+inline void test_QueueArray(void);
+inline void PrintQueueArray(QueueArr* obj);
 
 inline void test_DynamicList(void);
 inline void PrintDynamicList(List* list);
 
+
 // g e n e r i c  e l e m e n t s
 inline void AssignValue(const void* to, const void* from, size_t size);
 inline void SwapValues(const void* a, const void* b, size_t size);
+inline bool AreEqual(const void* left, const void* right, size_t size);
 inline void DragElement(void* arr, unsigned int from, unsigned int to, size_t elSize);
 inline int ToInt(void* value);
 inline char ToChar(void* value);
@@ -70,10 +84,29 @@ inline int   LinkedList_InsertChain(LinkedList* list, Node* node, unsigned int a
 // S T A C K
 inline Stack* NewStack(size_t valSize);
 inline void  Stack_Dispose(Stack* obj);
+inline bool  Stack_Has(Stack* obj, const void* value);
 inline bool  Stack_IsEmpty(Stack* obj);
 inline void* Stack_Peek(Stack* obj);
-inline void  Stack_Pop(Stack* obj, void* targetVariable);
-inline void  Stack_Push(Stack* obj, const void* value);
+inline int   Stack_Pop(Stack* obj, void* targetVariable);
+inline int   Stack_Push(Stack* obj, const void* value);
+// Q U E U E
+inline Queue* NewQueue(size_t valSize);
+inline int   Queue_Dequeue(Queue* obj, void* targetVariable);
+inline void  Queue_Dispose(Queue* obj);
+inline int   Queue_Enqueue(Queue* obj, const void* newValue);
+inline bool  Queue_Has(Queue* obj, const void* value);
+inline bool  Queue_IsEmpty(Queue* obj);
+inline void* Queue_Peek(Queue* obj);
+// Q U E U E  (v i a  a r r a y)
+inline QueueArr* NewQueueArr(size_t elSize, unsigned int capacity);
+inline int   QueueArr_Count(QueueArr* obj);
+inline int   QueueArr_Dequeue(QueueArr* obj, void* targetVariable);
+inline void  QueueArr_Dispose(QueueArr* obj);
+inline int   QueueArr_Enqueue(QueueArr* obj, const void* newValue);
+inline bool  QueueArr_Has(QueueArr* obj, const void* value);
+inline bool  QueueArr_IsEmpty(QueueArr* obj);
+inline void* QueueArr_Peek(QueueArr* obj);
+inline int   QueueArr_RefactorArray(QueueArr* obj);
 
 
 struct list {
@@ -97,6 +130,20 @@ struct linkedList {
 struct stack {
 	struct node* TopOfStack;
 	size_t valSize;
+	int count;
+};
+
+struct queue {
+	struct node* front;
+	struct node* rear;
+	size_t valSize;
+	int count;
+};
+
+struct queueArr {
+	void* arr;
+	int capacity, front, rear;
+	size_t elSize;
 };
 
 // ЗАДАНИЯ к занятию №5.
@@ -198,7 +245,7 @@ bool BracersSequenceIsOK(char* string) {
 		}
 		string++;
 	}
-	if (!Stack_IsEmpty(stack)) meanwhile = false;
+	if (!Stack_IsEmpty(stack) && meanwhile == true) meanwhile = false;
 
 	Stack_Dispose(stack);
 	return meanwhile;
@@ -247,10 +294,12 @@ void Task_5_4(void) {
 	if (LinkedList_DeleteNode(list2, 0)) printf("не могу удалить по индексу 0:\t");
 	else printf("удаляю по индексу 0:\t\t");
 	PrintNodeChain(list2->head);
-	printf("\n\n");
+	printf("\n");
 
 	Node* out = LinkedList_ExcludeNode(list2, 3);
-	printf("Узел[3]: %d\n", ToInt(out->value));
+	printf("вычленяю узел[3] (%d):\t\t", ToInt(out->value));
+	PrintNodeChain(list2->head);
+	printf("\n\n");
 
 	NodeChain_Dipose(out);
 	out = LinkedList_ExcludeNode(list2, 10);
@@ -286,15 +335,211 @@ void PrintNodeChain(Node* head) {
 /// 5. **Реализовать алгоритм перевода из инфиксной записи арифметического выражения в постфиксную.
 /// </summary>
 void Task_5_5(void) {
-	//
+	char* expressions[10] = {
+		"12 * 4 + 7 * 2 = 31 * 2",
+		"12 + 4 * 7 + 2 = 42",
+		"12 + 4 * 7 / 2 = 3 + 3 * 3 + 3 / 3 * 6 + 4 + 4",
+		"12 + 4 * (7 + 2) > 45",
+		"(12 + 8) / (7 + 3) = 2",
+		"(22 + 4 * (7 - 2) - 4 * (9 + 1)) + 5 = 7",
+		"12 + 8 < (3 * 15) + 1 < 12 * (5 - 1)"
+	};
+
+	int i;
+	for (i = 0; i < 7; i++) {
+		printf("%s\n", expressions[i]);
+		if (Print_PostfixNotation(expressions[i])) {
+			printf("\n ! что-то пошло не так !\n");
+			return;
+		}
+		printf("\n\n");
+	}
+}
+
+int Print_PostfixNotation(char* expression) {
+	Stack* stack = NewStack(sizeof(char));
+	char c = ' ';
+	int shift;
+
+	while (*expression != '\0') {
+		if ('0' <= (*expression) && (*expression) <= '9') {
+			printf("%c", *expression++);
+			if (*(expression) == ' ' || *(expression) == '\0' || *(expression) == ')') printf(" ");
+		}
+
+		else if ((*expression) == '+' || (*expression) == '-') {
+			PrintPostfix_UnloadStack(stack);
+			Stack_Push(stack, expression++);
+		}
+
+		else if ((*expression) == '*' || (*expression) == '/') {
+			PrintPostfix_UnloadUntilLowPrecedence(stack);
+			Stack_Push(stack, expression++);
+		}
+
+		//else if ((*expression) == '(') {
+		//	if ((shift = PrintPostfix_ProcessSubstring_Recursive(expression)) < 0) return 1;
+		//	else expression += shift;
+		//}
+
+		else if ((*expression) == '(') {
+			Stack_Push(stack, expression++);
+		}
+		else if ((*expression) == ')') {
+			PrintPostfix_UnloadStack(stack);
+			expression++;
+		}
+
+		else if ((*expression) == '=' || (*expression) == '<' || (*expression) == '>') {
+			if (PrintPostfix_UnloadStack(stack)) {
+				Stack_Dispose(stack);
+				return 1;
+			}
+			printf("%c ", *expression++);
+		}
+
+		else expression++;
+	}
+	if (PrintPostfix_UnloadStack(stack)) {
+		Stack_Dispose(stack);
+		return 1;
+	}
+
+	Stack_Dispose(stack);
+	return 0;
+}
+
+int PrintPostfix_ProcessSubstring_Recursive(char* position) {
+	Stack* stack = NewStack(sizeof(char));
+	Stack_Push(stack, position++);
+	int length = -1, i;
+	char c;
+
+	while (!Stack_IsEmpty(stack)) {
+		length++;
+		if (*(position + length) == '(') Stack_Push(stack, position);
+		else if (*(position + length) == ')') Stack_Pop(stack, &c);
+	}
+	Stack_Dispose(stack);
+
+
+	char* substring = (char*)malloc(length + 1);
+	if (substring == NULL) return -1;
+	else {
+		for (i = 0; i < length; i++) {
+			*(substring + i) = *position++;
+		}
+		*(substring + length) = '\0';
+		Print_PostfixNotation(substring);
+		free(substring);
+	}
+
+	return length + 2;
+}
+
+int PrintPostfix_UnloadStack(Stack* stack) {
+	char c;
+	int res;
+	while (!Stack_IsEmpty(stack)) {
+		Stack_Pop(stack, &c);
+		if (c == '(') return 1;
+		printf("%c ", c);
+	}
+	return 0;
+}
+
+void PrintPostfix_UnloadUntilLowPrecedence(Stack* stack) {
+	char c;
+	while (!Stack_IsEmpty(stack)) {
+		c = *((char*)Stack_Peek(stack));
+		if (c == '+' || c == '-' || c == '(') return;
+
+		else if (c == '*' || c == '/') {
+			Stack_Pop(stack, &c);
+			printf("%c ", c);
+		}
+	}
 }
 
 
 /// <summary>
 /// 6. * Реализовать очередь.
 /// </summary>
-void Task_5_6(void) {
-	//
+void test_QueueLinked(void) {
+	Queue* queue = NewQueue(sizeof(int));
+	int i, in, out;
+
+	printf("Исходная очередь %s\n\n", Queue_IsEmpty(queue) ? "пуста" : "должна бы быть пуста, хм-м...");
+
+	for (i = 0; i < 16; i++) {
+		in = i * 2 + 1;
+
+		printf("добавляю значение %d:\t\t", in);
+		if (Queue_Enqueue(queue, &in)) printf("не вышло :(\n");
+		else {
+			PrintNodeChain(queue->front);
+			printf("\t  элементов %d, впереди - %d\n", queue->count, ToInt(Queue_Peek(queue)));
+		}
+
+		if ((i + 1) % 3 == 0) {
+			printf("достаю значение ");
+			if (Queue_Dequeue(queue, &out)) printf("не вышло :(\n");
+			else {
+				printf("%d:\t\t", out);
+				PrintNodeChain(queue->front);
+				printf("\t  элементов %d, впереди - %d\n", queue->count, ToInt(Queue_Peek(queue)));
+			}
+		}
+	}
+	printf("\n");
+
+	for (i = 0; i < 16; i++) {
+		out = i * 2 + 1;
+		printf("в очереди %s %d\n", Queue_Has(queue, &out) ? "имеется значение" : "нет значения", out);
+	}
+
+	Queue_Dispose(queue);
+}
+
+void test_QueueArray(void) {
+	QueueArr* queue = NewQueueArr(sizeof(int), 5);
+	int i, in, out;
+
+	printf("Исходная очередь %s\n\n", QueueArr_IsEmpty(queue) ? "пуста" : "должна бы быть пуста, хм-м...");
+
+	for (i = 0; i < 16; i++) {
+		in = i * 2 + 1;
+
+		printf("добавляю значение %d:\t\t", in);
+		if (QueueArr_Enqueue(queue, &in)) printf("не вышло (\n");
+		else PrintQueueArray(queue);
+
+		if ((i + 1) % 3 == 0) {
+			printf("достаю значение ");
+			if (QueueArr_Dequeue(queue, &out)) printf("\t\tне вышло :(\n");
+			else {
+				printf("%d:\t\t", out);
+				PrintQueueArray(queue);
+			}
+		}
+	}
+
+	for (i = 0; i < 16; i++) {
+		out = i * 2 + 1;
+		printf("в очереди %s %d\n", QueueArr_Has(queue, &out) ? "имеется значение" : "нет значения", out);
+	}
+
+	QueueArr_Dispose(queue);
+}
+
+void PrintQueueArray(QueueArr* obj) {
+	if (obj) {
+		int i, count = QueueArr_Count(obj);
+		for (i = 0; i < count; i++) {
+			printf("%d ", ToInt((char*)obj->arr + ((obj->front + i) % obj->capacity) * obj->elSize));
+		}
+		printf("\t  эл-тов %d/%d, впереди %d\n", count, obj->capacity, ToInt(QueueArr_Peek(obj)));
+	}
 }
 
 
@@ -305,7 +550,7 @@ void test_DynamicList(void) {
 	List* list = NewList(sizeof(int), 5);
 	int i, newValue;
 
-	printf("Исходный список %s\n", List_IsEmpty(list) ? "пуст" : "должен бы быть пустым, хм-м...");
+	printf("Исходный список %s\n\n", List_IsEmpty(list) ? "пуст" : "должен бы быть пустым, хм-м...");
 
 	printf("Добавление элементов:\n");
 	for (i = 0; i < 9; i++) {
@@ -327,9 +572,9 @@ void test_DynamicList(void) {
 }
 
 void PrintDynamicList(List* obj) {
-	if (obj != NULL) {
+	if (obj) {
 		int i;
-		printf("    эл-тов %2d/%2d, последний %2d\t", List_Count(obj), obj->capacity, obj->last);
+		printf("    эл-тов %2d/%-2d, последний №%d:\t\t", List_Count(obj), obj->capacity, obj->last);
 		for (i = 0; i <= obj->last; i++) {
 			printf("%d ", ToInt(List_AccessAt(obj, i)));
 		}
@@ -382,6 +627,23 @@ void SwapValues(const void* a, const void* b, size_t size) {
 			*((char*)a + chunk) ^= *((char*)b + chunk);
 		}
 	}
+}
+
+/// <summary>обобщенное сравнение</summary>
+bool AreEqual(const void* left, const void* right, size_t size) {
+	int chunk;
+	if (size % sizeof(int) == 0) {
+		size /= sizeof(int);
+		for (chunk = 0; chunk < size; chunk++) {
+			if (*((int*)left + chunk) != *((int*)right + chunk)) return false;
+		}
+	}
+	else {
+		for (chunk = 0; chunk < size; chunk++) {
+			if (*((char*)left + chunk) != *((char*)right + chunk)) return false;
+		}
+	}
+	return true;
 }
 
 /// <summary>продвигает элемент по массиву</summary>
@@ -574,10 +836,10 @@ int LinkedList_InsertChain(LinkedList* list, Node* node, unsigned int atIndex) {
 /// <summary>исключает узел на указанной позиции</summary>
 /// <returns>указатель на исключенный узел</returns>
 Node* LinkedList_ExcludeNode(LinkedList* list, unsigned int atIndex) {
-	Node *res = NULL, *prev = LinkedList_Access(list, atIndex - 1);
-	if (prev != NULL) {
-		res = prev->next;
-		prev->next = res->next;
+	Node *res = NULL, * previous = LinkedList_Access(list, atIndex - 1);
+	if (previous != NULL) {
+		res = previous->next;
+		previous->next = res->next;
 		res->next = NULL;
 	}
 	return res;
@@ -612,15 +874,21 @@ Stack* NewStack(size_t valSize) {
 	if (res != NULL) {
 		res->TopOfStack = NULL;
 		res->valSize = valSize;
+		res->count = 0;
 	}
 	return res;
 }
 
 /// <summary>"ложит" значение в стопку</summary>
-void Stack_Push(Stack* obj, const void* value) {
+int Stack_Push(Stack* obj, const void* value) {
 	Node* newNode = NewNode(value, obj->valSize);
-	if (obj->TopOfStack != NULL) newNode->next = obj->TopOfStack;
-	obj->TopOfStack = newNode;
+	if (newNode == NULL) return 1;
+	else {
+		if (obj->TopOfStack != NULL) newNode->next = obj->TopOfStack;
+		obj->TopOfStack = newNode;
+		(obj->count)++;
+	}
+	return 0;
 }
 
 /// <summary>"подглядывает" значение наверху стопки</summary>
@@ -631,15 +899,28 @@ void* Stack_Peek(Stack* obj) {
 
 /// <summary>"берет" значение со стопки</summary>
 /// <param name="targetVariable">целевая переменная, сохраняющая полученное значение</param>
-void Stack_Pop(Stack* obj, void* targetVariable) {
-	if (obj->TopOfStack) {
+int Stack_Pop(Stack* obj, void* targetVariable) {
+	if (obj->TopOfStack == NULL) return 1;
+	else {
 		AssignValue(targetVariable, obj->TopOfStack->value, obj->valSize);
 		obj->TopOfStack = NodeChain_Decapitate(obj->TopOfStack);
+		(obj->count)--;
 	}
+	return 0;
+}
+
+/// <summary>проверяет наличие значения в стопке</summary>
+bool Stack_Has(Stack* obj, const void* value) {
+	Node* temp = obj->TopOfStack;
+	while (temp) {
+		if (AreEqual(temp->value, value, temp->valSize)) return true;
+		temp = temp->next;
+	}
+	return false;
 }
 
 bool Stack_IsEmpty(Stack* obj) {
-	return obj->TopOfStack ? false : true;
+	return obj->count == 0;
 }
 
 /// <summary>высвобождает память всех узлов стопки и самой стопки</summary>
@@ -650,13 +931,81 @@ void Stack_Dispose(Stack* obj) {
 
 
 // - - - - - - - - - - - - - - - -
+//   Q U E U E
+
+
+/// <summary>создает очередь в динамической памяти</summary>
+Queue* NewQueue(size_t valSize) {
+	Queue* res = (Queue*)malloc(sizeof(Queue));
+	if (res != NULL) {
+		res->front = res->rear = NULL;
+		res->valSize = valSize;
+		res->count = 0;
+	}
+	return res;
+}
+
+/// <summary>"ставит" значение в очередь</summary>
+int Queue_Enqueue(Queue* obj, const void* newValue) {
+
+	Node* newNode = NewNode(newValue, obj->valSize);
+	if (newNode == NULL) return 1;
+	else {
+		if (obj->rear) {
+			obj->rear->next = newNode;
+			obj->rear = newNode;
+		}
+		else obj->front = obj->rear = newNode;
+		(obj->count)++;
+	}
+	return 0;
+}
+
+/// <summary>"подглядывает" следующее в очереди значение</summary>
+void* Queue_Peek(Queue* obj) {
+	if (obj->front) return obj->front->value;
+	else return NULL;
+}
+
+/// <summary>"достает" значение из очереди</summary>
+int Queue_Dequeue(Queue* obj, void* targetVariable) {
+	if (obj->front == NULL) return 1;
+	else {
+		AssignValue(targetVariable, obj->front->value, obj->valSize);
+		obj->front = NodeChain_Decapitate(obj->front);
+		if (obj->front == NULL) obj->rear = NULL;
+		(obj->count)--;
+	}
+	return 0;
+}
+
+/// <summary>проверяет наличие значения в очереди</summary>
+bool Queue_Has(Queue* obj, const void* value) {
+	Node* temp = obj->front;
+	while (temp) {
+		if (AreEqual(temp->value, value, temp->valSize)) return true;
+		temp = temp->next;
+	}
+	return false;
+}
+
+bool Queue_IsEmpty(Queue* obj) {
+	return obj->count == 0;
+}
+
+/// <summary>высвобождает память всех узлов очереди и самой очереди</summary>
+void Queue_Dispose(Queue* obj) {
+	if (obj->front != NULL) NodeChain_Dipose(obj->front);
+	free(obj);
+}
+
+
+// - - - - - - - - - - - - - - - -
 //   L I S T  (D Y N A M I C  A R R A Y)
 
 
-/// <summary>создает новый список</summary>
-/// <param name="elSize">размер одного элемента списка</param>
+/// <summary>создает новый список в динамической памяти</summary>
 /// <param name="capacity">начальная вместимость списка</param>
-/// <returns>указатель на созданный список в динамической памяти</returns>
 List* NewList(size_t elSize, unsigned int capacity) {
 	List* listObj = (List*)malloc(sizeof(List));
 	if (listObj != NULL) {
@@ -723,6 +1072,98 @@ int List_Count(List* obj) {
 
 /// <summary>высвободжает память массива списка и самого списка</summary>
 void List_Dispose(List* obj) {
+	free(obj->arr);
+	free(obj);
+}
+
+
+// - - - - - - - - - - - - - - - -
+//   Q U E U E  (v i a  a r r a y)
+
+
+/// <summary>создает новую очередь в динамической памяти</summary>
+/// <param name="capacity">начальная вместимость очереди</param>
+QueueArr* NewQueueArr(size_t elSize, unsigned int capacity) {
+	QueueArr* res = (QueueArr*)malloc(sizeof(QueueArr));
+	if (res != NULL) {
+		res->elSize = elSize;
+		res->capacity = capacity;
+		res->front = res->rear = -1;
+		res->arr = malloc(capacity * elSize);
+	}
+	return res;
+}
+
+/// <summary>пересоздает очередь, удваивая вместимость</summary>
+int QueueArr_RefactorArray(QueueArr* obj) {
+	void* newpool = malloc(2 * obj->capacity * obj->elSize);
+	if (newpool == NULL) return 1;
+	else {
+		int i;
+		for (i = 0; i < obj->capacity; i++) {
+			AssignValue((char*)newpool + i * obj->elSize, (char*)obj->arr + ((obj->front + i) % obj->capacity) * obj->elSize, obj->elSize);
+		}
+		obj->front = 0;
+		obj->rear = obj->capacity - 1;
+		obj->capacity *= 2;
+
+		free(obj->arr);
+		obj->arr = newpool;
+	}
+	return 0;
+}
+
+/// <summary>"ставит" значение в очередь</summary>
+int QueueArr_Enqueue(QueueArr* obj, const void* newValue) {
+	if (obj->rear < 0) {
+		obj->front = obj->rear = 0;
+	}
+	else {
+		if ((obj->rear + 1) % obj->capacity == obj->front) {
+			if (QueueArr_RefactorArray(obj)) return 1;
+		}
+		obj->rear = (obj->rear + 1) % obj->capacity;
+	}
+	AssignValue((char*)obj->arr + obj->rear * obj->elSize, newValue, obj->elSize);
+	return 0;
+}
+
+/// <summary>"подглядывает" следующее в очереди значение</summary>
+void* QueueArr_Peek(QueueArr* obj) {
+	if (obj->rear < 0) return NULL;
+	else return (void*)((char*)(obj->arr) + obj->front * obj->elSize);
+}
+
+/// <summary>"достает" значение из очереди</summary>
+int QueueArr_Dequeue(QueueArr* obj, void* targetVariable) {
+	if (obj->front < 0) return 1;
+	AssignValue(targetVariable, (char*)obj->arr + obj->front * obj->elSize, obj->elSize);
+
+	if (obj->front == obj->rear) obj->front = obj->rear = -1;
+	else obj->front = (obj->front + 1) % obj->capacity;
+	return 0;
+}
+
+/// <summary>проверяет наличие значения в очереди</summary>
+bool QueueArr_Has(QueueArr* obj, const void* value) {
+	int i, end = QueueArr_Count(obj) + 1;
+	for (i = obj->front; i < end; i = (i + 1) % obj->capacity) {
+		if (AreEqual((char*)obj->arr + i * obj->elSize, value, obj->elSize)) return true;
+	}
+	return false;
+}
+
+bool QueueArr_IsEmpty(QueueArr* obj) {
+	return obj->rear < 0;
+}
+
+int QueueArr_Count(QueueArr* obj) {
+	if (obj->rear < 0) return 0;
+	else return 1 + (obj->rear - obj->front + obj->capacity) % obj->capacity;
+}
+
+/// <summary>высвободжает память массива очереди и самой очереди</summary>
+void QueueArr_Dispose(QueueArr* obj) {
 	free(obj->arr);
 	free(obj);
 }
