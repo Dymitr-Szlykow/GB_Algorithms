@@ -3,24 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define bool int
-#define true 1
-#define false 0
+#include "lesson2.h"
 
 #define _StringLength 16
-
-
-inline void Task_2_1(void);
-inline int AsBinary_HeadOn_loop(int number, unsigned int maxlength, char* out);
-inline int AsBinary_recursive(int* number, unsigned int* maxlength, char* out);
-
-inline void Task_2_2(void);
-inline int Multiply_loop(int first, int second);
-inline double Power_loop(double number, unsigned int power);
-inline double Power_recursive(double number, unsigned int power);
-
-inline void Task_2_3(void);
 
 // 1. –еализовать функцию перевода из дес€тичной системы в двоичную, использу€ рекурсию.
 // 2. –еализовать функцию возведени€ числа a в степень b :

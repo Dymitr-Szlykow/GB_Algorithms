@@ -3,6 +3,7 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "lesson5.h"
 
 #pragma warning(disable : 4996)
 
@@ -10,141 +11,6 @@
 #define true 1
 #define false 0
 
-
-typedef struct node Node;
-typedef struct list List;
-typedef struct linkedList LinkedList;
-typedef struct stack Stack;
-typedef struct queue Queue;
-typedef struct queueArr QueueArr;
-
-inline void Task_5_1(void);
-inline void Print_AsBinary_stack(int number);
-inline void PrintFromCharStack(Stack* obj);
-
-inline void Task_5_3(void);
-inline bool BracersSequenceIsOK(char* string);
-inline bool CompareStack(Stack* stack, char c);
-
-inline void Task_5_4(void);
-inline LinkedList* InitNewLinkedList(size_t valSize, unsigned int count);
-inline void PrintNodeChain(Node* head);
-
-inline void Task_5_5(void);
-inline int Print_PostfixNotation(char* expression);
-inline int PrintPostfix_ProcessSubstring_Recursive(char* position);
-inline int PrintPostfix_UnloadStack(Stack* stack);
-inline void PrintPostfix_UnloadUntilLowPrecedence(Stack* stack);
-
-//inline void Task_5_6(void);
-inline void test_QueueLinked(void);
-inline void test_QueueArray(void);
-inline void PrintQueueArray(QueueArr* obj);
-
-inline void test_DynamicList(void);
-inline void PrintDynamicList(List* list);
-
-
-// g e n e r i c  e l e m e n t s
-inline void AssignValue(const void* to, const void* from, size_t size);
-inline void SwapValues(const void* a, const void* b, size_t size);
-inline bool AreEqual(const void* left, const void* right, size_t size);
-inline void DragElement(void* arr, unsigned int from, unsigned int to, size_t elSize);
-inline int ToInt(void* value);
-inline char ToChar(void* value);
-// L I S T  (D Y N A M I C  A R R A Y)
-inline List* NewList(size_t elSize, unsigned int capacity);
-inline void* List_AccessAt(List* obj, unsigned int atIndex);
-inline int   List_AddTo(List* obj, const void* newValue);
-inline int   List_Count(List* obj);
-inline void  List_Dispose(List* obj);
-inline int   List_InsertInto(List* obj, const void* newValue, unsigned int atIndex);
-inline bool  List_IsEmpty(List* obj);
-inline int   List_RefactorList(List* obj);
-inline int   List_RemoveFrom(List* obj, unsigned int atIndex);
-// L I N K A B L E  N O D E:  one-way
-inline Node* NewNode(const void* value, size_t valSize);
-inline Node* NodeChain_Decapitate(Node* head);
-inline void  NodeChain_Dipose(Node* node);
-inline void  NodeChain_DiposeTail(Node* node);
-inline Node* NodeChain_GetLastInLine(Node* node);
-inline int   NodeChain_InsertAsNext(Node* this, Node* newNode);
-inline Node* NodeChain_Reverse(Node* head);
-inline int   Node_InsertAsPrev(Node* this, Node* newNode);
-// L I N K E D  L I S T
-inline LinkedList* NewLinkedList(size_t valSize);
-inline LinkedList* CopyLinkedList(LinkedList* source);
-inline Node* LinkedList_Access(LinkedList* list, unsigned int atIndex);
-inline int   LinkedList_AddNode(LinkedList* list, const void* value);
-inline int   LinkedList_AttachChain(LinkedList* list, Node* node);
-inline int   LinkedList_DeleteNode(LinkedList* list, unsigned int atIndex);
-inline void  LinkedList_Dispose(LinkedList* list);
-inline Node* LinkedList_ExcludeNode(LinkedList* list, unsigned int atIndex);
-inline int   LinkedList_InsertChain(LinkedList* list, Node* node, unsigned int atIndex);
-// S T A C K
-inline Stack* NewStack(size_t valSize);
-inline void  Stack_Dispose(Stack* obj);
-inline bool  Stack_Has(Stack* obj, const void* value);
-inline bool  Stack_IsEmpty(Stack* obj);
-inline void* Stack_Peek(Stack* obj);
-inline int   Stack_Pop(Stack* obj, void* targetVariable);
-inline int   Stack_Push(Stack* obj, const void* value);
-// Q U E U E
-inline Queue* NewQueue(size_t valSize);
-inline int   Queue_Dequeue(Queue* obj, void* targetVariable);
-inline void  Queue_Dispose(Queue* obj);
-inline int   Queue_Enqueue(Queue* obj, const void* newValue);
-inline bool  Queue_Has(Queue* obj, const void* value);
-inline bool  Queue_IsEmpty(Queue* obj);
-inline void* Queue_Peek(Queue* obj);
-// Q U E U E  (v i a  a r r a y)
-inline QueueArr* NewQueueArr(size_t elSize, unsigned int capacity);
-inline int   QueueArr_Count(QueueArr* obj);
-inline int   QueueArr_Dequeue(QueueArr* obj, void* targetVariable);
-inline void  QueueArr_Dispose(QueueArr* obj);
-inline int   QueueArr_Enqueue(QueueArr* obj, const void* newValue);
-inline bool  QueueArr_Has(QueueArr* obj, const void* value);
-inline bool  QueueArr_IsEmpty(QueueArr* obj);
-inline void* QueueArr_Peek(QueueArr* obj);
-inline int   QueueArr_RefactorArray(QueueArr* obj);
-
-
-struct list {
-	void* arr;
-	int capacity, last;
-	size_t elSize;
-};
-
-struct node {
-	void* value;
-	size_t valSize;
-	struct node* next;
-};
-
-struct linkedList {
-	struct node* head;
-	size_t valSize;
-	//int count;
-};
-
-struct stack {
-	struct node* TopOfStack;
-	size_t valSize;
-	int count;
-};
-
-struct queue {
-	struct node* front;
-	struct node* rear;
-	size_t valSize;
-	int count;
-};
-
-struct queueArr {
-	void* arr;
-	int capacity, front, rear;
-	size_t elSize;
-};
 
 // «јƒјЌ»я к зан€тию є5.
 // 1. –еализовать перевод из дес€тичной в двоичную систему счислени€ с использованием стека.
@@ -698,21 +564,21 @@ Node* NodeChain_GetLastInLine(Node* node) {
 }
 
 /// <summary>св€зывает второй узел и его хвост с первым, хвост первого св€зываетс€ с хвостом второго</summary>
-int NodeChain_InsertAsNext(Node* this, Node* newNode) {
-	if (this->valSize != newNode->valSize) return 1;
-	if (this->next != NULL) (NodeChain_GetLastInLine(newNode))->next = this->next;
-	this->next = newNode;
+int NodeChain_InsertAsNext(Node* obj, Node* newNode) {
+	if (obj->valSize != newNode->valSize) return 1;
+	if (obj->next != NULL) (NodeChain_GetLastInLine(newNode))->next = obj->next;
+	obj->next = newNode;
 	return 0;
 }
 
 /// <summary>симулирует вставку "перед"</summary>
 /// <param name="newNode">узел без хвоста</param>
-int Node_InsertAsPrev(Node* this, Node* newNode) {
-	if (newNode->next != NULL || this->valSize != newNode->valSize) return 1;
+int Node_InsertAsPrev(Node* obj, Node* newNode) {
+	if (newNode->next != NULL || obj->valSize != newNode->valSize) return 1;
 
-	if (this->next != NULL) newNode->next = this->next;
-	this->next = newNode;
-	SwapValues(this->value, newNode->value, this->valSize);
+	if (obj->next != NULL) newNode->next = obj->next;
+	obj->next = newNode;
+	SwapValues(obj->value, newNode->value, obj->valSize);
 	return 0;
 }
 

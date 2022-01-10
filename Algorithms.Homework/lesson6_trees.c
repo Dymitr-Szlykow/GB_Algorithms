@@ -1,45 +1,14 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "lesson5.c"
-
-//#pragma warning(disable : 4996)
+#include "lesson5.h"
+#include "lesson6.h"
 
 #define bool int
 #define true 1
 #define false 0
 
-
-typedef struct treeNode TreeNode;
-typedef struct tree Tree;
-
-inline void Task_6_1(void);
-
-inline void Task_6_2(void);
-
-inline void Task_6_3(void);
-
-// g e n e r i c  e l e m e n t s
-inline void PrintValue_ToInt(const void* value);
-inline void WriteIntValue(const void* value, char* targetString);
-// T R E E  N O D E
-inline TreeNode* NewTreeNode(const void* value, size_t valSize);
-inline void Subtree_PrintParentheses(TreeNode* obj, void (*printValueMethod)(const void*));
-inline void Subtree_WriteParenthesesForm(TreeNode* obj, void (*writeValueMethod)(const void*, char*), char** targetString);
-inline TreeNode* Subtree_ReadParenthesesForm(char* sourceString, void (*readValueMethod)(const void*));
-
-struct treeNode {
-	void* value;
-	size_t valSize;
-	struct treeNode* left;
-	struct treeNode* right;
-	struct treeNode* parent;
-};
-
-struct tree {
-	struct treeNode* root;
-	size_t val_size;
-};
+//#pragma warning(disable : 4996)
 
 
 // ÇÀÄÀÍÈß ê çàíÿòèþ ¹6.

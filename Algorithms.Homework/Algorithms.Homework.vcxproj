@@ -165,6 +165,15 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lesson1.h" />
+    <ClInclude Include="lesson2.h" />
+    <ClInclude Include="lesson3.h" />
+    <ClInclude Include="lesson4.h" />
+    <ClInclude Include="lesson5.h" />
+    <ClInclude Include="lesson6.h" />
+    <ClInclude Include="main.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

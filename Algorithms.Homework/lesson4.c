@@ -1,19 +1,8 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "lesson4.h"
 
-
-inline void Task_4_1(void);
-inline int* ClarifyObstacles(int rows, int columns);
-inline void SolvePaths(int* field, int* obstacles, int rows, int columns);
-inline void PrintMap(int* field, int* obstacles, int rows, int columns);
-
-inline void Task_4_2(void);
-inline char* RandomString(int* out_length);
-inline char* LongestCommonSubsequence(char* string1, int length1, char* string2, int length2, int* solution);
-inline void PrintSolution(char* string1, int length1, char* string2, int length2, int* solution);
-
-inline void test_PointerAriphmetics(void);
 
 // ЗАДАНИЯ к занятию №4.
 // 1. *Количество маршрутов с препятствиями. Реализовать чтение массива с препятствием и нахождение количество маршрутов.

@@ -3,68 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "lesson1.c"
-
-#define bool int
-#define true 1
-#define false 0
+#include "lesson1.h"
+#include "lesson3.h"
 
 #define _ArraySize 15
 #define _DoExplicit true
-
-typedef struct observeParams ObserveParams;
-inline void ResetObserveParams(void);
-inline void CurrentReport(int* arr, int count);
-
-inline void RunLesson3(void);
-inline void Lesson3_part1_simpleSorting(void);
-inline void Lesson3_part2_insertion(void);
-inline ObserveParams RunSorting(int (*sorting)(int*,int,int(*)(const void*, const void*)));
-inline void RunSearchTest(int* arr, int count, int search, int(*SearchMethod)(int*, int, int));
-
-inline int* InitNewArray(int count);
-inline int* GetArrayCopy(int* source, int count);
-inline void PrintArray(char* presentation, int* arr, int count);
-
-inline int compare_int_asc(const void* left, const void* right);
-inline int compare_int_desc(const void* left, const void* right);
-inline void swap_bytewise(void* arr, int index1, int index2, size_t elSize);
-
-inline void sort_bubble_simple_observed(int* arr, int count, int (*predicate)(int,int));
-inline void sort_shaker_simple_observed(int* arr, int count, int (*predicate)(int,int));
-inline void sort_bubble_trail_observed(int* arr, int count, int (*predicate)(int,int));
-inline void sort_shaker_trail_observed(int* arr, int count, int (*predicate)(int,int));
-inline void sort_selection_observed(int* arr, int count, int (*predicate)(int,int));
-
-inline void sort_bubble_simple(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*));
-inline void sort_shaker_simple(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*));
-inline void sort_bubble_trail(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*));
-inline void sort_shaker_trail(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*));
-inline void sort_selection(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*));
-
-inline int search_binary(int* arr, int count, int search);
-
-inline void merge_BinaryInsertionSort(int** arr, int length, int* newValues, int count);
-inline void BinaryInsertionSort(int* arr, int length);
-inline int search_insertPosition_binary(int* arr, int count, const int value);
-inline int GoRightTilDifferent(int* fromPos, int edge);
-
-
-struct observeParams {
-	int compareCounter, swapCounter,
-		compareLast, swapLast,
-		ifCounter, assignCounter,
-		sorting_OuterCycleCounter, sorting_InnerCycleConter,
-		search_CycleCounter, search_result,
-		O;
-	char* SortFuncPresentation;
-	char* SearchFuncPresentation;
-};
-
-
-int* _SourceArray;
-ObserveParams _observer;
-
 
 // ЗАДАНИЯ к занятию №3.
 // 1.  Попробовать оптимизировать пузырьковую сортировку.
@@ -75,6 +18,10 @@ ObserveParams _observer;
 //     Функция возвращает индекс найденного элемента или -1, если элемент не найден.
 // 4*. Подсчитать количество операций для каждой из сортировок и сравнить его с асимптотической сложностью алгоритма.
 // 5**. Реализовать сортировку вставками, используя бинарный посик.
+
+
+int* _SourceArray;
+ObserveParams _observer;
 
 
 /// <summary>lesson 3 submain function</summary>

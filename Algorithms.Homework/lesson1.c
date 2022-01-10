@@ -3,60 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-//#pragma warning(disable : 4996)
+#include "lesson1.h"
 
 #define bool int
 #define true 1
 #define false 0
 
-
-inline void Task_1_1(void);
-
-inline void Task_1_2(void);
-inline void Task_1_2a(void);
-inline void Task_1_2b(void);
-inline double GreatestOfFour_ReverseTree(double a, double b, double c, double d);
-inline double GreatestOfFour_HeadOn(double a, double b, double c, double d);
-inline void ReadGreaterNum(char* message, double* res);
-
-inline void Task_1_3(void);
-inline void Swap_withTemp(int* x, int* y);
-inline void Swap_sum(int* x, int* y);
-inline void SwapIntegers_binary(int* x, int* y);
-
-inline void Task_1_4(void);
-typedef struct coefs Coefs;
-inline char* SqEquation_print(Coefs c);
-inline int SqEquation_solve(Coefs c, double* x1, double* x2, double* D);
-
-inline void Task_1_7(void);
-typedef struct chessCell ChessCell;
-inline ChessCell NewCell(unsigned int rank, unsigned int file);
-inline ChessCell ReadCell(char* message);
-inline char* CellColor_ToString(ChessCell c);
-
-inline void Task_1_13(void);
-inline void Task_1_13a(int count);
-inline void Task_1_13b(int count);
-inline int GetSystemRand(int digits);
-inline void BootMyRand(unsigned int starter);
-inline int GetMyRand(void);
-
-inline void Task_1_14(void);
-inline bool IsAutomorph(int num);
-
-
-struct coefs {
-	double A, B, C;
-};
-
-struct chessCell {
-	unsigned char rank, file;
-	bool IsWhite;
-};
-
-// 1. ¬вести вес и рост человека.–ассчитать и вывести индекс массы тела по формуле I = m / (h * h); где m - масса тела в килограммах, h - рост в метрах.
+// 1. ¬вести вес и рост человека. –ассчитать и вывести индекс массы тела по формуле I = m / (h * h); где m - масса тела в килограммах, h - рост в метрах.
 // 2. Ќайти максимальное из четырех чисел.ћассивы не использовать.
 // 3. Ќаписать программу обмена значени€ми двух целочисленных переменных :
 //    a. с использованием третьей переменной;

@@ -1,47 +1,13 @@
 #include <conio.h>
 #include <locale.h>
 #include <stdio.h>
-#include "lesson1.c"
-#include "lesson2.c"
-#include "lesson3.c"
-#include "lesson4.c"
-#include "lesson5.c"
-
-#define bool int
-#define true 1
-#define false 0
-
-
-typedef struct menu Menu;
-void MenuLoop(Menu StartMenu);
-inline void SwitchLessons(Menu* running);
-inline void Switch_Lesson1(Menu* running);
-inline void Switch_Lesson2(Menu* running);
-inline void Switch_Lesson4(Menu* running);
-inline void Switch_Lesson5(Menu* running);
-void RunTask(void (*task)(void), char* header);
-
-Menu NewMainMenu();
-void TurnMenu_lesson1(Menu* this);
-void TurnMenu_lesson2(Menu* this);
-void TurnMenu_lesson4(Menu* this);
-void TurnMenu_lesson5(Menu* this);
-void TurnMenu_lesson6(Menu* this);
-void TurnMenu_lesson7(Menu* this);
-void TurnMenu_lesson8(Menu* this);
-
-void OldMenu_CommandLine(Menu StartMenu);
-void OldMenu_print(Menu* running);
-void OldMenu_Lessons_print(void);
-void OldMenu_Lesson1_print(void);
-void OldMenu_Lesson2_print(void);
-
-
-struct menu {
-	int lastline, selected, code;
-	char* MenuLines[16];
-	void (*Enter)(Menu* running);
-};
+#include "lesson1.h"
+#include "lesson2.h"
+#include "lesson3.h"
+#include "lesson4.h"
+#include "lesson5.h"
+#include "lesson6.h"
+#include "main.h"
 
 
 int main(int argc, char* argv[]) {
@@ -136,20 +102,20 @@ void SwitchLessons(Menu* running) {
 }
 
 /// <summary>переключает на меню первого урока</summary>
-void TurnMenu_lesson1(Menu* this) {
-	this->code = 1;
-	this->selected = 1;
-	this->Enter = Switch_Lesson1;
-	this->MenuLines[0] = "Занятие первое:";
-	this->MenuLines[1] = "1-1. Индекс массы тела.";
-	this->MenuLines[2] = "1-2. Максимальное из четырех чисел.";
-	this->MenuLines[3] = "1-3. Обмен целочисленными значениями.";
-	this->MenuLines[4] = "1-4. Решение квадратного уравнения.";
-	this->MenuLines[5] = "1-7. Цвета шахматных клеток.";
-	this->MenuLines[6] = "1-13. Случайные числа от одного до ста.";
-	this->MenuLines[7] = "1-14. Автоморфные числа.";
-	this->MenuLines[8] = "Назад в главное меню.";
-	this->lastline = 8;
+void TurnMenu_lesson1(Menu* obj) {
+	obj->code = 1;
+	obj->selected = 1;
+	obj->Enter = Switch_Lesson1;
+	obj->MenuLines[0] = "Занятие первое:";
+	obj->MenuLines[1] = "1-1. Индекс массы тела.";
+	obj->MenuLines[2] = "1-2. Максимальное из четырех чисел.";
+	obj->MenuLines[3] = "1-3. Обмен целочисленными значениями.";
+	obj->MenuLines[4] = "1-4. Решение квадратного уравнения.";
+	obj->MenuLines[5] = "1-7. Цвета шахматных клеток.";
+	obj->MenuLines[6] = "1-13. Случайные числа от одного до ста.";
+	obj->MenuLines[7] = "1-14. Автоморфные числа.";
+	obj->MenuLines[8] = "Назад в главное меню.";
+	obj->lastline = 8;
 }
 /// <summary>переключение задания из меню первого урока</summary>
 void Switch_Lesson1(Menu* running) {
@@ -165,16 +131,16 @@ void Switch_Lesson1(Menu* running) {
 }
 
 /// <summary>переключает на меню второго урока</summary>
-void TurnMenu_lesson2(Menu* this) {
-	this->code = 2;
-	this->selected = 1;
-	this->Enter = Switch_Lesson2;
-	this->MenuLines[0] = "Занятие второе:";
-	this->MenuLines[1] = "2-1. Перевод из десятичной системы в двоичную.";
-	this->MenuLines[2] = "2-2. Возведение числа a в степень b.";
-	//this->MenuLines[3] = "2-3. Исполнитель Калькулятор.";
-	this->MenuLines[3] = "Назад в главное меню.";
-	this->lastline = 3;
+void TurnMenu_lesson2(Menu* obj) {
+	obj->code = 2;
+	obj->selected = 1;
+	obj->Enter = Switch_Lesson2;
+	obj->MenuLines[0] = "Занятие второе:";
+	obj->MenuLines[1] = "2-1. Перевод из десятичной системы в двоичную.";
+	obj->MenuLines[2] = "2-2. Возведение числа a в степень b.";
+	//obj->MenuLines[3] = "2-3. Исполнитель Калькулятор.";
+	obj->MenuLines[3] = "Назад в главное меню.";
+	obj->lastline = 3;
 }
 /// <summary>переключение задания из меню второго урока</summary>
 void Switch_Lesson2(Menu* running) {
@@ -186,17 +152,17 @@ void Switch_Lesson2(Menu* running) {
 }
 
 /// <summary>переключает на меню четвертого урока</summary>
-void TurnMenu_lesson4(Menu* this) {
-	this->code = 4;
-	this->selected = 1;
-	this->Enter = Switch_Lesson4;
-	this->MenuLines[0] = "Занятие четвертое:";
-	this->MenuLines[1] = "4-1. Подсчет количества маршрутов с препятствиями.";
-	this->MenuLines[2] = "4-2. Нахождение длины максимальной последовательности.";
-	//this->MenuLines[3] = "4-3. ...";
-	this->MenuLines[3] = "test. Арифметика указателей.";
-	this->MenuLines[4] = "Назад в главное меню.";
-	this->lastline = 4;
+void TurnMenu_lesson4(Menu* obj) {
+	obj->code = 4;
+	obj->selected = 1;
+	obj->Enter = Switch_Lesson4;
+	obj->MenuLines[0] = "Занятие четвертое:";
+	obj->MenuLines[1] = "4-1. Подсчет количества маршрутов с препятствиями.";
+	obj->MenuLines[2] = "4-2. Нахождение длины максимальной последовательности.";
+	//obj->MenuLines[3] = "4-3. ...";
+	obj->MenuLines[3] = "test. Арифметика указателей.";
+	obj->MenuLines[4] = "Назад в главное меню.";
+	obj->lastline = 4;
 }
 /// <summary>переключение задания из меню четвертого урока</summary>
 void Switch_Lesson4(Menu* running) {
@@ -209,20 +175,20 @@ void Switch_Lesson4(Menu* running) {
 }
 
 /// <summary>переключает на меню пятого урока</summary>
-void TurnMenu_lesson5(Menu* this) {
-	this->code = 5;
-	this->selected = 1;
-	this->Enter = Switch_Lesson5;
-	this->MenuLines[0] = "Занятие пятое:";
-	this->MenuLines[1] = "5-1. Перевод в двоичную систему с использованием стека.";
-	this->MenuLines[2] = "5-3. Проверка скобочной последовательности.";
-	this->MenuLines[3] = "5-4. Test: linked list, копирование односвязного списка.";
-	this->MenuLines[4] = "5-5. Перевод из инфиксной записи арифметического выражения в постфиксную.";
-	this->MenuLines[5] = "5-6. Test: queue, на основе связного списка.";
-	this->MenuLines[6] = "5-6. Test: queue, на основе массива.";
-	this->MenuLines[7] = "test: List (dynamic array).";
-	this->MenuLines[8] = "Назад в главное меню.";
-	this->lastline = 8;
+void TurnMenu_lesson5(Menu* obj) {
+	obj->code = 5;
+	obj->selected = 1;
+	obj->Enter = Switch_Lesson5;
+	obj->MenuLines[0] = "Занятие пятое:";
+	obj->MenuLines[1] = "5-1. Перевод в двоичную систему с использованием стека.";
+	obj->MenuLines[2] = "5-3. Проверка скобочной последовательности.";
+	obj->MenuLines[3] = "5-4. Test: linked list, копирование односвязного списка.";
+	obj->MenuLines[4] = "5-5. Перевод из инфиксной записи арифметического выражения в постфиксную.";
+	obj->MenuLines[5] = "5-6. Test: queue, на основе связного списка.";
+	obj->MenuLines[6] = "5-6. Test: queue, на основе массива.";
+	obj->MenuLines[7] = "test: List (dynamic array).";
+	obj->MenuLines[8] = "Назад в главное меню.";
+	obj->lastline = 8;
 }
 /// <summary>переключение задания из меню пятого урока</summary>
 void Switch_Lesson5(Menu* running) {
@@ -237,9 +203,9 @@ void Switch_Lesson5(Menu* running) {
 	}
 }
 
-void TurnMenu_lesson6(Menu* this) {}
-void TurnMenu_lesson7(Menu* this) {}
-void TurnMenu_lesson8(Menu* this) {}
+void TurnMenu_lesson6(Menu* obj) {}
+void TurnMenu_lesson7(Menu* obj) {}
+void TurnMenu_lesson8(Menu* obj) {}
 
 
 /// <summary>главный цикл первой версии меню (командная строка)</summary>
