@@ -1,10 +1,12 @@
-#pragma once
+#ifndef MAIN_H
+#define MAIN_H
 
-typedef struct menu {
-	int lastline, selected, code;
-	char* MenuLines[16];
-	void (*Enter)(Menu* running);
-} Menu;
+/// <summary>
+/// int lastline, selected, code;
+/// char* MenuLines[16];
+/// void (*Enter)(Menu* running);
+/// </summary>
+typedef struct menu Menu;
 
 
 void MenuLoop(Menu StartMenu);
@@ -29,3 +31,5 @@ void OldMenu_print(Menu* running);
 void OldMenu_Lessons_print(void);
 void OldMenu_Lesson1_print(void);
 void OldMenu_Lesson2_print(void);
+
+#endif

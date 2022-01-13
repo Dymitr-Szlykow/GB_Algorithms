@@ -1,6 +1,7 @@
 #include <conio.h>
 #include <locale.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "lesson1.h"
 #include "lesson2.h"
 #include "lesson3.h"
@@ -8,6 +9,16 @@
 #include "lesson5.h"
 #include "lesson6.h"
 #include "main.h"
+
+#pragma warning(disable : 4996)
+#pragma warning(disable : 6031)
+
+
+struct menu {
+	int lastline, selected, code;
+	char* MenuLines[16];
+	void (*Enter)(Menu* running);
+};
 
 
 int main(int argc, char* argv[]) {
@@ -170,7 +181,7 @@ void Switch_Lesson4(Menu* running) {
 	case 1: RunTask(Task_4_1, running->MenuLines[running->selected]); break;
 	case 2: RunTask(Task_4_2, running->MenuLines[running->selected]); break;
 	case 3: RunTask(test_PointerAriphmetics, running->MenuLines[running->selected]); break;
-		//case 3: RunTask(Task_2_3, running->MenuLines[running->selected]); break; // not implemmented
+	//case 3: RunTask(Task_2_3, running->MenuLines[running->selected]); break; // not implemmented
 	}
 }
 
