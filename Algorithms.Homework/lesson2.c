@@ -3,34 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "lesson1.h"
+#include "lesson2.h"
 
-#define bool int
-#define true 1
-#define false 0
+#pragma warning(disable : 4996)
+#pragma warning(disable : 6031)
 
 #define _StringLength 16
-
-
-inline void Task_2_1(void);
-inline int AsBinary_HeadOn_loop(int number, unsigned int maxlength, char* out);
-inline int AsBinary_recursive(int* number, unsigned int* maxlength, char* out);
-
-inline void Task_2_2(void);
-inline int Multiply_loop(int first, int second);
-inline double Power_loop(double number, unsigned int power);
-inline double Power_recursive(double number, unsigned int power);
-
-inline void Task_2_3(void);
-
-// 1. Реализовать функцию перевода из десятичной системы в двоичную, используя рекурсию.
-// 2. Реализовать функцию возведения числа a в степень b :
-//    a.без рекурсии;
-//    b.рекурсивно;
-//    c.* рекурсивно, используя свойство четности степени.
-// 3. * *Исполнитель Калькулятор преобразует целое число, записанное на экране.
-//    У исполнителя две команды, каждой команде присвоен номер: Прибавь 1, Умножь на 2.
-//    Первая команда увеличивает число на экране на 1, вторая увеличивает это число в 2 раза.
-//    Сколько существует программ, которые число 3 преобразуют в число 20 ?
 
 
 /// <summary>
@@ -62,7 +41,7 @@ void Task_2_1() {
 
 }
 
-int AsBinary_HeadOn_loop(int number, unsigned int maxlength, char* out) {
+int AsBinary_HeadOn_loop(int number, unsigned int maxlength, char* out) { // O( log number + log number )
 	if (maxlength < 2) return 2;
 	
 	else if (number == 0) {
@@ -81,13 +60,13 @@ int AsBinary_HeadOn_loop(int number, unsigned int maxlength, char* out) {
 			i = 1;
 		}
 
-		while (power <= number) {
+		while (power <= number) { // цикл O(log power)  ->  O(log number)
 			power *= 2;
 			cap++;
 		}
 		if (cap + i > maxlength) return 1;
 
-		for (; cap > 1; cap--, i++) {
+		for (; cap > 1; cap--, i++) { // цикл O(cap)  =  O(log power)
 			power /= 2;
 
 			if (number >= power) {
@@ -126,7 +105,7 @@ int AsBinary_recursive(int* number, unsigned int* maxlength, char* out) {
 
 		char thisposition = *number % 2 == 0 ? '0' : '1';
 		*number = (*number % 2 == 0) ? (*number / 2) : ((*number - 1) / 2);
-		if (AsBinary_recursive(number, maxlength, out)) return 1;
+		if (AsBinary_recursive(number, maxlength, out)) return 1; // рекурсия по  number/2  или  (number-1)/2  =>  O(log number)
 
 		if (*maxlength > 1) {
 			*(out + *number) = thisposition;
@@ -160,24 +139,24 @@ void Task_2_2() {
 }
 
 int Multiply_loop(int first, int second) {
-	if (first < second) SwapIntegers_binary(&first, &second); // см. lesson1.c
+	if (first < second) SwapIntegers_binary(&first, &second); // O(SwapIntegers_binary()) ~ O(1), см. lesson1
 
 	int i, res = first;
-	for (i = 1; i <= second; i++) {
+	for (i = 1; i <= second; i++) { // цикл O(second) -> O(n), n = first < second ? first : second
 		res += first;
 	}
 	return res;
 }
 
 double Power_loop(double number, unsigned int power) {
-	while (power % 2 == 0) {
+	while (power % 2 == 0) { // цикл O(log power)
 		number *= number;
 		power /= 2;
 	}
 
 	int i;
 	double res = number;
-	for (i = power; i > 1; i--) {
+	for (i = power; i > 1; i--) { // цикл O(power)
 		res *= number;
 	}
 	return res;

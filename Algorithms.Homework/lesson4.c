@@ -1,29 +1,13 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include "lesson4.h"
 
-
-inline void Task_4_1(void);
-inline int* ClarifyObstacles(int rows, int columns);
-inline void SolvePaths(int* field, int* obstacles, int rows, int columns);
-inline void PrintMap(int* field, int* obstacles, int rows, int columns);
-
-inline void Task_4_2(void);
-inline char* RandomString(int* out_length);
-inline char* LongestCommonSubsequence(char* string1, int length1, char* string2, int length2, int* solution);
-inline void PrintSolution(char* string1, int length1, char* string2, int length2, int* solution);
-
-inline void test_PointerAriphmetics(void);
-
-// ЗАДАНИЯ к занятию №4.
-// 1. *Количество маршрутов с препятствиями. Реализовать чтение массива с препятствием и нахождение количество маршрутов.
-//    Например, карта 3х3:
-//    1 1 1
-//    0 1 0
-//    0 1 0
-// 2. Решить задачу о нахождении длины максимальной последовательности с помощью матрицы.
-// 3. * **Требуется обойти конем шахматную доску размером NxM, пройдя через все поля доски по одному разу.
-//    Здесь алгоритм решения такой же, как в задаче о 8 ферзях. Разница только в проверке положения коня.
+#pragma warning(disable : 4477)
+#pragma warning(disable : 4996)
+#pragma warning(disable : 6031)
+#pragma warning(disable : 6273)
 
 
 /// <summary>
@@ -44,7 +28,7 @@ void Task_4_1(void) {
 }
 
 /// <summary>создает карту препятствий</summary>
-int* ClarifyObstacles(int rows, int columns) {
+int* ClarifyObstacles(int rows, int columns) { // ~ O( rows + columns - 2 + (rows - 2) * (columns - 2) * O(rand() )  ->  O( rows + columns + rows * columns * O(rand) )
 	int* res = (int*)malloc(rows * columns * sizeof(int));
 
 	if (res != NULL) {
@@ -52,17 +36,17 @@ int* ClarifyObstacles(int rows, int columns) {
 
 		int i, j, maxObstacles = (rows + columns - 4) / 2;
 
-		for (i = 0; i < rows; i++) {
+		for (i = 0; i < rows; i++) { // цикл O(rows)
 			*(res + i * columns) = 0; // res[i][0] = 0;
 			*(res + (i + 1) * columns - 1) = 0; // res[i][columns - 1] = 0;
 		}
-		for (j = 1; j < columns - 1; j++) {
+		for (j = 1; j < columns - 1; j++) { // цикл O(columns - 2)
 			*(res + j) = 0; // res[0][j] = 0;
 			*(res + (rows - 1) * columns + j) = 0; // res[rows - 1][j] = 0;
 		}
 
-		for (i = 1; i < rows - 1; i++) {
-			for (j = 1; j < columns - 1; j++) {
+		for (i = 1; i < rows - 1; i++) { // цикл O(rows - 2)
+			for (j = 1; j < columns - 1; j++) { // цикл O(columns - 2)
 				if (maxObstacles > 0) {
 					if (rand() % 3 == 0) {
 						*(res + i * columns + j) = 1;// res[i][j] = 1;
@@ -78,17 +62,17 @@ int* ClarifyObstacles(int rows, int columns) {
 	return res;
 }
 
-void SolvePaths(int* field, int* obstacles, int rows, int columns) {
+void SolvePaths(int* field, int* obstacles, int rows, int columns) { // ~ O(columns + rows * (columns - 1)) = O(columns - rows + rows * columns)
 	int i, j;
-	for (j = 0; j < columns; j++) {
+	for (j = 0; j < columns; j++) { // цикл O(columns)
 		if (*(obstacles + j)) *(field + j) = 0; // if (obstacles[0][j]) field[0][j] = 0;
 		else *(field + j) = 1; // else field[0][j] = 1;
 	}
-	for (i = 1; i < rows; i++) {
+	for (i = 1; i < rows; i++) { // цикл O(rows)
 		if (*(obstacles + i * columns)) *(field + i * columns) = 0; // if (obstacles[i][0]) field[i][0] = 0;
 		else *(field + i * columns) = *(field + (i - 1) * columns); // else field[i][0] = field[i - 1][0];
 
-		for (j = 1; j < columns; j++) {
+		for (j = 1; j < columns; j++) { // цикл O(columns - 1)
 			if (*(obstacles + i * columns + j)) *(field + i* columns + j) = 0; // if (obstacles[i][j]) field[i][j] = 0;
 			else *(field + i * columns + j) = *(field + (i - 1) * columns + j) + *(field + i * columns + j - 1); // else field[i][j] = field[i - 1][j] + field[i][j - 1];
 		}
@@ -97,8 +81,8 @@ void SolvePaths(int* field, int* obstacles, int rows, int columns) {
 
 void PrintMap(int* field, int* obstacles, int rows, int columns) {
 	int i, j;
-	for (i = 0; i < rows; i++) {
-		for (j = 0; j < columns; j++) {
+	for (i = 0; i < rows; i++) { // цикл O(rows)
+		for (j = 0; j < columns; j++) { // цикл O(columns)
 			if (*(obstacles + i * columns + j)) printf("  XX "); // if (obstacles[i][j])
 			else printf(" %3d ", *(field + i * columns + j)); // field[i][j]
 		}
@@ -135,26 +119,29 @@ void Task_4_2(void) {
 char* RandomString(int* out_length) {
 	*out_length = (rand() % 26) + 15;
 	char* res = (char*)malloc((*out_length + 1) * sizeof(char));
+	if (res) {
 
-	int i;
-	for (i = 0; i < *out_length; i++) {
-		res[i] = (rand() % 11)
-			? ((rand() % ('z' - 'a')) + 'a') // (rand() % 26) + 97
-			: ' ';
+		int i;
+		for (i = 0; i < *out_length; i++) {
+			res[i] = (rand() % 11)
+				? ((rand() % ('z' - 'a')) + 'a') // (rand() % 26) + 97
+				: ' ';
+		}
+		res[(*out_length)++] = '\0';
 	}
-	res[(*out_length)++] = '\0';
-
 	return res;
 }
 
-char* LongestCommonSubsequence(char* string1, int length1, char* string2, int length2, int* solution) {
+char* LongestCommonSubsequence(char* string1, int length1, char* string2, int length2, int* solution) { // ~ O(length1 + length2 + length1 * length2 + pos)
 	int i, j, pos;
 	char* path = (char*)malloc(length1 * length2 * sizeof(char));
-	for (i = 0; i < length1; i++) *(solution + i * length2) = 0;
-	for (j = 1; j < length2; j++) *(solution + j) = 0;
+	if (path == NULL) return NULL;
 
-	for (i = 1; i < length1; i++) {
-		for (j = 1; j < length2; j++) {
+	for (i = 0; i < length1; i++) *(solution + i * length2) = 0; // цикл O(length1)
+	for (j = 1; j < length2; j++) *(solution + j) = 0; // цикл O(length2 - 1)
+
+	for (i = 1; i < length1; i++) { // цикл O(length1 - 1)
+		for (j = 1; j < length2; j++) { // цикл O(length2 - 1)
 
 			if (*(string1 + i - 1) == *(string2 + j - 1)) {
 				*(solution + i * length2 + j) = *(solution + (i - 1) * length2 + j - 1) + 1;
@@ -183,19 +170,21 @@ char* LongestCommonSubsequence(char* string1, int length1, char* string2, int le
 
 	pos = *(solution + --i * length2 + --j);
 	char* res = (char*)malloc((pos + 1) * sizeof(char));
-	*(res + pos) = '\0';
-	pos--;
+	if (res) {
+		*(res + pos) = '\0';
+		pos--;
 
-	while (pos >= 0) {
-		switch (*(path + i * length2 + j)) {
-		case 'c':
-			*(res + pos) = *(string1 + i - 1);
-			pos--;
-			i--;
-			j--;
-			break;
-		case 'l': j--; break;
-		case 'u': i--; break;
+		while (pos >= 0) { // цикл O(pos)
+			switch (*(path + i * length2 + j)) {
+			case 'c':
+				*(res + pos) = *(string1 + i - 1);
+				pos--;
+				i--;
+				j--;
+				break;
+			case 'l': j--; break;
+			case 'u': i--; break;
+			}
 		}
 	}
 
@@ -209,9 +198,9 @@ void PrintSolution(char* string1, int length1, char* string2, int length2, int* 
 	for (j = 0; j < length2; j++) printf("%3c ", *(string2 + j) == ' ' ? '_' : *(string2 + j));
 	printf("\n\n");
 
-	for (i = 1; i < length1; i++) {
+	for (i = 1; i < length1; i++) { // цикл O(length1)
 		printf("    %c\t", *(string1 + i - 1) == ' ' ? '_' : *(string1 + i - 1));
-		for (j = 1; j < length2; j++) {
+		for (j = 1; j < length2; j++) { // цикл O(length2)
 			printf("%3d ", *(solution + i * length2 + j));
 		}
 		printf("\n");
@@ -230,8 +219,15 @@ void test_PointerAriphmetics() {
 	int(*rowPointerDyn)[3] = dynArr;
 
 	printf("Sizeof(int):              %d\n", sizeof(int));				// 4
+	printf("Sizeof(float):            %d\n", sizeof(float));			// 
+	printf("Sizeof(double):           %d\n", sizeof(double));			// 
 	printf("Sizeof(int*):             %d\n", sizeof(int*));				// 4
+	printf("Sizeof(float*):           %d\n", sizeof(float*));			// 
+	printf("Sizeof(double*):          %d\n", sizeof(double*));			// 
 	printf("Sizeof(void*):            %d\n", sizeof(void*));			// 4
+	printf("Sizeof(size_t):           %d\n", sizeof(size_t));			// 
+	printf("Sizeof(time_t):           %d\n", sizeof(time_t));			// 
+
 	printf("Sizeof(int[3]):           %d\n", sizeof(int[3]));			// 12
 	printf("Sizeof(locArr):           %d\n", sizeof(locArr));			// 60 - массив int[5][3]
 	printf("Sizeof(locArr[0]):        %d\n", sizeof(locArr[0]));		// 12 - массив int[3]
@@ -301,7 +297,6 @@ void test_PointerAriphmetics() {
 		printf("rowPointerDyn + 2:  \t%d  \t%d\n", rowPointerDyn + 2, **(rowPointerDyn + 2));
 		printf("\n");
 
-		int temp;
 		for (i = 0, j = rows * cols; i < j; i++) {
 			printf(" %4d", *(dynArr + i));
 			if ((i + 1) % cols == 0) printf("\n");

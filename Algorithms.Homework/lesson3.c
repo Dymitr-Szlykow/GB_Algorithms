@@ -1,85 +1,27 @@
+#include <conio.h>
 #include <malloc.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "lesson1.c"
+#include <time.h>
+#include "lesson1.h"
+#include "lesson3.h"
 
-#define bool int
-#define true 1
-#define false 0
+#pragma warning(disable : 4996)
+#pragma warning(disable : 6031)
 
 #define _ArraySize 15
 #define _DoExplicit true
-
-typedef struct observeParams ObserveParams;
-inline void ResetObserveParams(void);
-inline void CurrentReport(int* arr, int count);
-
-inline void RunLesson3(void);
-inline void Lesson3_part1_simpleSorting(void);
-inline void Lesson3_part2_insertion(void);
-inline ObserveParams RunSorting(int (*sorting)(int*,int,int(*)(const void*, const void*)));
-inline void RunSearchTest(int* arr, int count, int search, int(*SearchMethod)(int*, int, int));
-
-inline int* InitNewArray(int count);
-inline int* GetArrayCopy(int* source, int count);
-inline void PrintArray(char* presentation, int* arr, int count);
-
-inline int compare_int_asc(const void* left, const void* right);
-inline int compare_int_desc(const void* left, const void* right);
-inline void swap_bytewise(void* arr, int index1, int index2, size_t elSize);
-
-inline void sort_bubble_simple_observed(int* arr, int count, int (*predicate)(int,int));
-inline void sort_shaker_simple_observed(int* arr, int count, int (*predicate)(int,int));
-inline void sort_bubble_trail_observed(int* arr, int count, int (*predicate)(int,int));
-inline void sort_shaker_trail_observed(int* arr, int count, int (*predicate)(int,int));
-inline void sort_selection_observed(int* arr, int count, int (*predicate)(int,int));
-
-inline void sort_bubble_simple(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*));
-inline void sort_shaker_simple(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*));
-inline void sort_bubble_trail(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*));
-inline void sort_shaker_trail(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*));
-inline void sort_selection(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*));
-
-inline int search_binary(int* arr, int count, int search);
-
-inline void merge_BinaryInsertionSort(int** arr, int length, int* newValues, int count);
-inline void BinaryInsertionSort(int* arr, int length);
-inline int search_insertPosition_binary(int* arr, int count, const int value);
-inline int GoRightTilDifferent(int* fromPos, int edge);
-
-
-struct observeParams {
-	int compareCounter, swapCounter,
-		compareLast, swapLast,
-		ifCounter, assignCounter,
-		sorting_OuterCycleCounter, sorting_InnerCycleConter,
-		search_CycleCounter, search_result,
-		O;
-	char* SortFuncPresentation;
-	char* SearchFuncPresentation;
-};
 
 
 int* _SourceArray;
 ObserveParams _observer;
 
 
-// ЗАДАНИЯ к занятию №3.
-// 1.  Попробовать оптимизировать пузырьковую сортировку.
-//     Сравнить количество операций сравнения оптимизированной и не оптимизированной программы.
-//     Написать функции сортировки, которые возвращают количество операций.
-// 2*. Реализовать шейкерную сортировку.
-// 3.  Реализовать бинарный алгоритм поиска в виде функции, которой передается отсортированный массив.
-//     Функция возвращает индекс найденного элемента или -1, если элемент не найден.
-// 4*. Подсчитать количество операций для каждой из сортировок и сравнить его с асимптотической сложностью алгоритма.
-// 5**. Реализовать сортировку вставками, используя бинарный посик.
-
-
 /// <summary>lesson 3 submain function</summary>
 void RunLesson3() {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	_SourceArray = InitNewArray(_ArraySize);
 
 	Lesson3_part1_simpleSorting();
@@ -140,7 +82,7 @@ void Lesson3_part1_simpleSorting() {
 
 void Lesson3_part2_insertion() {
 	int legthBefore = 19, add = 5;
-	int* arraySort, arrayNew;
+	int* arraySort, *arrayNew;
 
 	arraySort = InitNewArray(legthBefore);
 	PrintArray("Исходный массив \t", arraySort, legthBefore);
@@ -178,16 +120,16 @@ void ResetObserveParams() {
 /// <param name="task">- функция сортировки</param>
 /// <param name="presentation">- сообщение для представления массива при выводе</param>
 /// <returns>параметры наблюдения для оценок сортировки</returns>
-ObserveParams RunSorting(int (*sorting)(int*,int,int(*)(const void*, const void*))) {
-	ResetObserveParams();
-	int* runningArr = GetArrayCopy(_SourceArray, _ArraySize);
-	int searchtest = rand() % 100;
+ObserveParams RunSorting(void (*sorting)(int*,int,int(*)(const void*, const void*))) { // O( rand() + O(sorting()) + const )
+	ResetObserveParams(); // O(1)
+	int* runningArr = GetArrayCopy(_SourceArray, _ArraySize); // O(_ArraySize), _ArraySize - макрос, в сборке соответствует constant
+	int searchtest = rand() % 100; // O(rand())
 
 	sorting(runningArr, _ArraySize, compare_int_asc);
 	if (_DoExplicit) printf("  всего   сравн %3d, обм %2d\n", _observer.compareCounter, _observer.swapCounter);
 	else PrintArray(_observer.SortFuncPresentation, runningArr, _ArraySize);
 
-	RunSearchTest(runningArr, _ArraySize, searchtest, search_binary);
+	RunSearchTest(runningArr, _ArraySize, searchtest, search_binary); // O(RunSearchTest()) = O(search_binary()) = O(log _ArraySize) => O(log const) ~ O(1)
 	printf("\n");
 
 	free(runningArr);
@@ -297,7 +239,7 @@ void swap_bytewise(void* arr, int index1, int index2, size_t elSize) {
 /// <summary>простая сортировка пузырьком</summary>
 /// <param name="arr">- сортируемый массив</param>
 /// <param name="predicate">- используемая при сортировке функция сравнения</param>
-void sort_bubble_simple_observed(int* arr, int count, int (*predicate)(int,int)) {
+void sort_bubble_simple_observed(int* arr, int count, int (*predicate)(const void*, const void*)) {
 	_observer.SortFuncPresentation = "простой пузырек \t"; // объявляет себя наблюдателю
 	_observer.O = pow(_ArraySize, 2);
 	if (_DoExplicit) PrintArray(_observer.SortFuncPresentation, arr, count); // выводит исходный массив
@@ -346,17 +288,17 @@ void sort_bubble_simple_observed(int* arr, int count, int (*predicate)(int,int))
 }
 
 /// <summary>простая сортировка пузырьком (собранный вариант)</summary>
-void sort_bubble_simple(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*)) {
+void sort_bubble_simple(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*)) { // ~ O( O((count^2)/2) * O(elSize) )
 	int startIndex = 0,
 		endIndex = count - 1,
 		pos, wrongPositions = -1;
 
-	for (startIndex = 0; startIndex != endIndex && wrongPositions != 0; endIndex--) {
+	for (startIndex = 0; startIndex != endIndex && wrongPositions != 0; endIndex--) { // вложенный цикл O((count^2)/2) -> O(count^2)
 		wrongPositions = 0;
 		for (pos = startIndex; pos < endIndex; pos++) {
-			if (predicate((char*)arr + pos * elSize, (char*)arr + (pos + 1) * elSize) == 1)
+			if (predicate((char*)arr + pos * elSize, (char*)arr + (pos + 1) * elSize) == 1) // O(predicate()) ~ O(1)
 				wrongPositions++;
-				swap_bytewise(arr, pos, pos + 1, elSize);
+				swap_bytewise(arr, pos, pos + 1, elSize); // O(elSize)
 		}
 	}
 }
@@ -365,7 +307,7 @@ void sort_bubble_simple(void* arr, int count, size_t elSize, int (*predicate)(co
 /// <summary>сортировка типа shaker: обходит массив змейкой</summary>
 /// <param name="arr">- сортируемый массив</param>
 /// <param name="predicate">- используемая при сортировке функция сравнения</param>
-void sort_shaker_simple_observed(int* arr, int count, int (*predicate)(int, int)) {
+void sort_shaker_simple_observed(int* arr, int count, int (*predicate)(const void*, const void*)) {
 	_observer.SortFuncPresentation = "встряхивание    \t"; // объявляет себя наблюдателю
 	_observer.O = pow(_ArraySize, 2);
 	if (_DoExplicit) PrintArray(_observer.SortFuncPresentation, arr, count); // выводит исходный массив
@@ -448,20 +390,20 @@ void sort_shaker_simple_observed(int* arr, int count, int (*predicate)(int, int)
 }
 
 /// <summary>сортировка типа shaker (собранный вариант)</summary>
-void sort_shaker_simple(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*)) {
+void sort_shaker_simple(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*)) { // ~ O( O((count^2)/2) * O(elSize) )
 	int leftIndex = 0,
 		rightIndex = count - 1,
 		pos = leftIndex,
 		wrongPositions = -1;
 
-	while (leftIndex < rightIndex && wrongPositions != 0) {
+	while (leftIndex < rightIndex && wrongPositions != 0) { // вложенный цикл O((count^2)/2) -> O(count^2)
 		wrongPositions = 0;
 
 		if (pos == leftIndex) {
 			for (; pos < rightIndex; pos++) {
-				if (predicate((char*)arr + pos * elSize, (char*)arr + (pos + 1) * elSize) > 0) {
+				if (predicate((char*)arr + pos * elSize, (char*)arr + (pos + 1) * elSize) > 0) { // O(predicate()) ~ O(1)
 					wrongPositions++;
-					swap_bytewise(arr, pos, pos + 1, elSize);
+					swap_bytewise(arr, pos, pos + 1, elSize); // O(elSize)
 				}
 			}
 			pos = --rightIndex;
@@ -469,9 +411,9 @@ void sort_shaker_simple(void* arr, int count, size_t elSize, int (*predicate)(co
 
 		else if (pos == rightIndex) {
 			for (; pos > leftIndex; pos--) {
-				if (predicate((char*)arr + (pos - 1) * elSize, (char*)arr + pos * elSize) > 0) {
+				if (predicate((char*)arr + (pos - 1) * elSize, (char*)arr + pos * elSize) > 0) { // O(predicate()) ~ O(1)
 					wrongPositions++;
-					swap_bytewise(arr, pos - 1, pos, elSize);
+					swap_bytewise(arr, pos - 1, pos, elSize); // O(elSize)
 				}
 			}
 			pos = ++leftIndex;
@@ -483,7 +425,7 @@ void sort_shaker_simple(void* arr, int count, size_t elSize, int (*predicate)(co
 /// <summary>сортировка пузырьком со "слипанием": протягивает одинаковые значения группой</summary>
 /// <param name="arr">- сортируемый массив</param>
 /// <param name="predicate">- используемая при сортировке функция сравнения</param>
-void sort_bubble_trail_observed(int* arr, int count, int (*predicate)(int, int)) {
+void sort_bubble_trail_observed(int* arr, int count, int (*predicate)(const void*, const void*)) {
 	_observer.SortFuncPresentation = "пузырек со слипанием\t"; // объявляет себя наблюдателю
 	_observer.O = pow(_ArraySize, 2);
 	if (_DoExplicit) PrintArray(_observer.SortFuncPresentation, arr, count); // выводит исходный массив
@@ -556,18 +498,18 @@ void sort_bubble_trail_observed(int* arr, int count, int (*predicate)(int, int))
 }
 
 /// <summary>сортировка пузырьком со "слипанием" (собранный вариант)</summary>
-void sort_bubble_trail(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*)) {
+void sort_bubble_trail(void* arr, int count, size_t elSize, int (*predicate)(const void*, const void*)) { // O( O((count^2)/2) * O(trail) * O(elSize) )
 	int startIndex = 0,
 		endIndex = count - 1,
 		pos, trail, i;
 
-	while (startIndex < endIndex) {
+	while (startIndex < endIndex) { // цикл O(count)
 		trail = 0;
-		for (pos = startIndex; pos < endIndex; pos++) {
-			switch (predicate((char*)arr + pos * elSize, (char*)arr + (pos + 1) * elSize)) {
+		for (pos = startIndex; pos < endIndex; pos++) { // цикл O(endIndex) ~ O(count)
+			switch (predicate((char*)arr + pos * elSize, (char*)arr + (pos + 1) * elSize)) { // O(predicate()) ~ O(1)
 			case 1:
-				for (i = 0; i <= trail; i++)
-					swap_bytewise(arr, pos - i, pos - i + 1, elSize);
+				for (i = 0; i <= trail; i++) // цикл O(trail)
+					swap_bytewise(arr, pos - i, pos - i + 1, elSize); // O(elSize)
 				break;
 			case 0:
 				trail++;
@@ -585,7 +527,7 @@ void sort_bubble_trail(void* arr, int count, size_t elSize, int (*predicate)(con
 /// <summary>сортировка встряхиванием со "слипанием": обходит массив змейкой, протягивает одинаковые значения группой</summary>
 /// <param name="arr">- сортируемый массив</param>
 /// <param name="predicate">- используемая при сортировке функция сравнения</param>
-void sort_shaker_trail_observed(int* arr, int count, int (*predicate)(int, int)) {
+void sort_shaker_trail_observed(int* arr, int count, int (*predicate)(const void*, const void*)) {
 	_observer.SortFuncPresentation = "встряхивание со слипанием"; // объявляет себя наблюдателю
 	_observer.O = pow(_ArraySize, 2);
 	if (_DoExplicit) PrintArray(_observer.SortFuncPresentation, arr, count); // выводит исходный массив
@@ -723,11 +665,11 @@ void sort_shaker_trail(void* arr, int count, size_t elSize, int (*predicate)(con
 		// проход вправо
 		if (pos == leftIndex) {
 			for (; pos < rightIndex; pos++) {
-				switch (predicate((char*)arr + pos * elSize, (char*)arr + (pos + 1) * elSize)) {
+				switch (predicate((char*)arr + pos * elSize, (char*)arr + (pos + 1) * elSize)) { // O(predicate()) ~ O(1)
 				case 1:
 					wrongPositions++;
-					for (i = 0; i <= trail; i++)
-						swap_bytewise(arr, pos - i, pos - i + 1, elSize);
+					for (i = 0; i <= trail; i++) // цикл O(trail)
+						swap_bytewise(arr, pos - i, pos - i + 1, elSize); // O(elSize)
 					break;
 				case 0:
 					trail++;
@@ -743,11 +685,11 @@ void sort_shaker_trail(void* arr, int count, size_t elSize, int (*predicate)(con
 		// проход влево
 		else if (pos == rightIndex) {
 			for (; pos > leftIndex; pos--) {
-				switch (predicate((char*)arr + (pos - 1) * elSize, (char*)arr + pos * elSize)) {
+				switch (predicate((char*)arr + (pos - 1) * elSize, (char*)arr + pos * elSize)) { // O(predicate()) ~ O(1)
 				case 1:
 					wrongPositions++;
-					for (i = 0; i <= trail; i++)
-						swap_bytewise(arr, pos + i - 1, pos + i, elSize);
+					for (i = 0; i <= trail; i++) // цикл O(trail)
+						swap_bytewise(arr, pos + i - 1, pos + i, elSize); // O(elSize)
 					break;
 				case 0:
 					trail++;
@@ -765,7 +707,7 @@ void sort_shaker_trail(void* arr, int count, size_t elSize, int (*predicate)(con
 /// <summary>сортировка перебором</summary>
 /// <param name="arr">- сортируемый массив</param>
 /// <param name="predicate">- используемая при сортировке функция сравнения</param>
-void sort_selection_observed(int* arr, int count, int (*predicate)(int, int)) {
+void sort_selection_observed(int* arr, int count, int (*predicate)(const void*, const void*)) {
 	_observer.SortFuncPresentation = "перебор \t\t"; // объявляет себя наблюдателю
 	_observer.O = pow(_ArraySize, 2);
 	if (_DoExplicit) PrintArray(_observer.SortFuncPresentation, arr, count); // выводит исходный массив
@@ -817,13 +759,13 @@ void sort_selection(void* arr, int count, size_t elSize, int (*predicate)(const 
 		endIndex = count - 1,
 		pos, tempIndex;
 
-	for (startIndex = 0; startIndex < endIndex; startIndex++) {
-		for (tempIndex = pos = startIndex; pos <= endIndex; pos++) {
-			if (predicate((char*)arr + tempIndex * elSize, (char*)arr + pos * elSize) > 0) {
+	for (startIndex = 0; startIndex < endIndex; startIndex++) { // цикл O(count)
+		for (tempIndex = pos = startIndex; pos <= endIndex; pos++) { // цикл O(count/2)
+			if (predicate((char*)arr + tempIndex * elSize, (char*)arr + pos * elSize) > 0) { // O(predicate()) ~ O(1)
 				tempIndex = pos;
 			}
 		}
-		if (startIndex != tempIndex) swap_bytewise(arr, startIndex, tempIndex, elSize);
+		if (startIndex != tempIndex) swap_bytewise(arr, startIndex, tempIndex, elSize); // O(elSize)
 	}
 }
 
@@ -842,11 +784,11 @@ int search_binary(int* arr, int count, int searchValue) {
 		rightIndex = count - 1,
 		midIndex;
 
-	while (leftIndex <= rightIndex) {
+	while (leftIndex <= rightIndex) { // цикл по (leftIndex+rightIndex)/2 = (0 + count - 1)/2  =>  O(log count)
 		_observer.search_CycleCounter++;
 		midIndex = (leftIndex + rightIndex) / 2;
 
-		switch (compare(&searchValue, arr + midIndex)) {
+		switch (compare(&searchValue, arr + midIndex)) { // ~ O(1)
 		case 0:
 			return midIndex;
 		case 1:
@@ -868,10 +810,11 @@ int search_binary(int* arr, int count, int searchValue) {
 /// <param name="count">- количество новых значений</param>
 void merge_BinaryInsertionSort(int** arr, int length, int* newValues, int count) {
 	int* resultArr = (int*)realloc(*arr, (length + count) * sizeof(int));
-	if (resultArr != NULL) *arr = resultArr;
+	if (resultArr == NULL) return;
+	else *arr = resultArr;
 
 	int i;
-	for (i = 0; i < count; i++) {
+	for (i = 0; i < count; i++) { // цикл O(count)
 		ResetObserveParams();
 
 		resultArr[length + i] = newValues[i];
@@ -892,12 +835,12 @@ void merge_BinaryInsertionSort(int** arr, int length, int* newValues, int count)
 /// <summary>находит нужное место бинарным поиском и проталкивает крайний несортированный элемент</summary>
 /// <param name="arr">- массив с единственным последним несортированным элементом</param>
 void BinaryInsertionSort(int* arr, int length) {
-	int i, newIndex = search_insertPosition_binary(arr, length - 1, arr[length - 1]);
-	for (i = length - 1; i > newIndex; i--) {
+	int i, newIndex = search_insertPosition_binary(arr, length - 1, arr[length - 1]); // O(search_insertPosition_binary) ~ O(length * log length)
+	for (i = length - 1; i > newIndex; i--) { // ~ O(length + 1 - newIndex) ; т.к. newIndex в [0;length - 1]  =>  O(length)
 		_observer.sorting_InnerCycleConter++;
 
 		_observer.swapCounter++;
-		SwapIntegers_binary(arr + i - 1, arr + i);
+		SwapIntegers_binary(arr + i - 1, arr + i); // ~ O(1)
 	}
 }
 
@@ -914,13 +857,13 @@ int search_insertPosition_binary(int* arr, int count, const int value) {
 	if (arr[0] > arr[count - 1]) compare = compare_int_desc;
 	else compare = compare_int_asc;
 
-	while (leftIndex <= rightIndex) {
+	while (leftIndex <= rightIndex) { // цикл O(count)
 		_observer.search_CycleCounter++;
 
 		midIndex = (leftIndex + rightIndex) / 2;
-		switch (compare(&value, arr + midIndex)) {
+		switch (compare(&value, arr + midIndex)) { // ~ O(1)
 		case 0:
-			return midIndex + GoRightTilDifferent(arr + midIndex, count - midIndex);
+			return midIndex + GoRightTilDifferent(arr + midIndex, count - midIndex); // O(GoRightTilDifferent()) ~ O(count - midIndex)  =>  O(log count)
 			// return midIndex + 1;
 			// если в массиве присутствует более одного значения равного новому, оптимальный индекс не гарантирован
 			// так или иначе их перебирать: в этой функции сравнениями без записи (вероятно выгоднее), или при вставке - обменами без проверок
