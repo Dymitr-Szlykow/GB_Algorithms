@@ -36,6 +36,9 @@
     <ClCompile Include="lesson6_trees.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="lesson7_graphs.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lesson1.h">
@@ -57,6 +60,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="main.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="lesson7.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
