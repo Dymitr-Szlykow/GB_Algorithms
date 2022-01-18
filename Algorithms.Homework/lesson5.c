@@ -52,7 +52,7 @@ void Print_AsBinary_stack(int number) {
 	PrintFromCharStack(stack);
 	printf("\n");
 
-	Stack_Dispose(stack);
+	Stack_Dispose(stack, NULL);
 }
 
 void PrintFromCharStack(Stack* obj) {
@@ -101,7 +101,7 @@ bool BracersSequenceIsOK(char* string) {
 	}
 	if (!Stack_IsEmpty(stack) && meanwhile == true) meanwhile = false;
 
-	Stack_Dispose(stack);
+	Stack_Dispose(stack, NULL);
 	return meanwhile;
 }
 
@@ -155,16 +155,16 @@ void Task_5_4(void) {
 	PrintNodeChain(list2->head);
 	printf("\n\n");
 
-	NodeChain_Dipose(out);
+	NodeChain_Dipose(out, NULL);
 	out = LinkedList_ExcludeNode(list2, 10);
 
 	printf("Исходный список:  ");
 	PrintNodeChain(list1->head);
 	printf("\n");
 
-	if (out) NodeChain_Dipose(out);
-	LinkedList_Dispose(list1);
-	LinkedList_Dispose(list2);
+	if (out) NodeChain_Dipose(out, NULL);
+	LinkedList_Dispose(list1, NULL);
+	LinkedList_Dispose(list2, NULL);
 }
 
 LinkedList* InitNewLinkedList(size_t valSize, unsigned int count) {
@@ -246,7 +246,7 @@ int Print_PostfixNotation(char* expression) {
 
 		else if ((*expression) == '=' || (*expression) == '<' || (*expression) == '>') {
 			if (PrintPostfix_UnloadStack(stack)) {
-				Stack_Dispose(stack);
+				Stack_Dispose(stack, NULL);
 				return 1;
 			}
 			printf("%c ", *expression++);
@@ -255,11 +255,11 @@ int Print_PostfixNotation(char* expression) {
 		else expression++;
 	}
 	if (PrintPostfix_UnloadStack(stack)) {
-		Stack_Dispose(stack);
+		Stack_Dispose(stack, NULL);
 		return 1;
 	}
 
-	Stack_Dispose(stack);
+	Stack_Dispose(stack, NULL);
 	return 0;
 }
 
@@ -274,7 +274,7 @@ int PrintPostfix_ProcessSubstring_Recursive(char* position) {
 		if (*(position + length) == '(') Stack_Push(stack, position);
 		else if (*(position + length) == ')') Stack_Pop(stack, &c);
 	}
-	Stack_Dispose(stack);
+	Stack_Dispose(stack, NULL);
 
 
 	char* substring = (char*)malloc(length + 1);
@@ -352,7 +352,7 @@ void test_QueueLinked(void) {
 		printf("в очереди %s %d\n", Queue_Has(queue, &out) ? "имеется значение" : "нет значения", out);
 	}
 
-	Queue_Dispose(queue);
+	Queue_Dispose(queue, NULL);
 }
 
 void test_QueueArray(void) {
@@ -422,7 +422,7 @@ void test_DynamicList(void) {
 	List_InsertInto(list, &newValue, 3);
 	PrintDynamicList(list);
 	
-	List_Dispose(list);
+	List_Dispose(list, NULL);
 }
 
 void PrintDynamicList(List* obj) {
@@ -552,6 +552,7 @@ Node* NodeChain_GetLastInLine(Node* node) {
 }
 
 /// <summary>связывает второй узел и его хвост с первым, хвост первого связывается с хвостом второго</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int NodeChain_InsertAsNext(Node* obj, Node* newNode) {
 	if (obj->valSize != newNode->valSize) return 1;
 	if (obj->next != NULL) (NodeChain_GetLastInLine(newNode))->next = obj->next;
@@ -560,7 +561,8 @@ int NodeChain_InsertAsNext(Node* obj, Node* newNode) {
 }
 
 /// <summary>симулирует вставку "перед"</summary>
-/// <param name="newNode">узел без хвоста</param>
+/// <param name="newNode">- узел без хвоста</param>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int Node_InsertAsPrev(Node* obj, Node* newNode) {
 	if (newNode->next != NULL || obj->valSize != newNode->valSize) return 1;
 
@@ -600,9 +602,11 @@ void NodeChain_DiposeTail(Node* node) {
 }
 
 /// <summary>высвобождает память всех следующих и текущего узла</summary>
-void NodeChain_Dipose(Node* node) {
+/// <param name="disposeValues">- фукнция, ликвидирующая значение элемента в динамической памяти; по умолчанию free()</param>
+void NodeChain_Dipose(Node* node, void(*disposeValues)(void*)) {
+	if (!disposeValues) disposeValues = free;
 	NodeChain_DiposeTail(node);
-	free(node->value);
+	disposeValues(node->value);
 	free(node);
 }
 
@@ -652,7 +656,9 @@ Node* LinkedList_Access(LinkedList* list, unsigned int atIndex) {
 }
 
 /// <summary>создает новый узел с указанным значением в конце связного списка</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int LinkedList_AddNode(LinkedList* list, const void* value) {
+	if (list == NULL) return 1;
 	Node* newNode = NewNode(value, list->valSize);
 	if (newNode == NULL) return 1;
 	if (LinkedList_AttachChain(list, newNode)) return 1;
@@ -660,6 +666,7 @@ int LinkedList_AddNode(LinkedList* list, const void* value) {
 }
 
 /// <summary>проикрепляет указанный узел к концу связного списка</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int LinkedList_AttachChain(LinkedList* list, Node* node) {
 	if (node->valSize != list->valSize) return 1;
 
@@ -669,6 +676,7 @@ int LinkedList_AttachChain(LinkedList* list, Node* node) {
 }
 
 /// <summary>вставляет цепочку узлов в указанное положение</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int LinkedList_InsertChain(LinkedList* list, Node* node, unsigned int atIndex) {
 	if (node->valSize != list->valSize) return 1;
 
@@ -700,6 +708,7 @@ Node* LinkedList_ExcludeNode(LinkedList* list, unsigned int atIndex) {
 }
 
 /// <summary>удаляет указанный узел, высвобождает его память</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int LinkedList_DeleteNode(LinkedList* list, unsigned int atIndex) {
 	if (atIndex == 0) list->head = NodeChain_Decapitate(list->head);
 
@@ -712,8 +721,8 @@ int LinkedList_DeleteNode(LinkedList* list, unsigned int atIndex) {
 }
 
 /// <summary>высвобождает память всех узлов списка и самого списка</summary>
-void LinkedList_Dispose(LinkedList* list) {
-	if (list->head != NULL) NodeChain_Dipose(list->head);
+void LinkedList_Dispose(LinkedList* list, void(*disposeValues)(void*)) {
+	if (list->head != NULL) NodeChain_Dipose(list->head, disposeValues);
 	free(list);
 }
 
@@ -734,6 +743,7 @@ Stack* NewStack(size_t valSize) {
 }
 
 /// <summary>"ложит" значение в стопку</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int Stack_Push(Stack* obj, const void* value) {
 	Node* newNode = NewNode(value, obj->valSize);
 	if (newNode == NULL) return 1;
@@ -752,7 +762,8 @@ void* Stack_Peek(Stack* obj) {
 }
 
 /// <summary>"берет" значение со стопки</summary>
-/// <param name="targetVariable">целевая переменная, сохраняющая полученное значение</param>
+/// <param name="targetVariable">- целевая переменная, сохраняющая полученное значение</param>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int Stack_Pop(Stack* obj, void* targetVariable) {
 	if (obj->TopOfStack == NULL) return 1;
 	else {
@@ -778,8 +789,8 @@ bool Stack_IsEmpty(Stack* obj) {
 }
 
 /// <summary>высвобождает память всех узлов стопки и самой стопки</summary>
-void Stack_Dispose(Stack* obj) {
-	if (obj->TopOfStack != NULL) NodeChain_Dipose(obj->TopOfStack);
+void Stack_Dispose(Stack* obj, void(*disposeValues)(void*)) {
+	if (obj->TopOfStack != NULL) NodeChain_Dipose(obj->TopOfStack, disposeValues);
 	free(obj);
 }
 
@@ -800,6 +811,7 @@ Queue* NewQueue(size_t valSize) {
 }
 
 /// <summary>"ставит" значение в очередь</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int Queue_Enqueue(Queue* obj, const void* newValue) {
 
 	Node* newNode = NewNode(newValue, obj->valSize);
@@ -822,6 +834,7 @@ void* Queue_Peek(Queue* obj) {
 }
 
 /// <summary>"достает" значение из очереди</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int Queue_Dequeue(Queue* obj, void* targetVariable) {
 	if (obj->front == NULL) return 1;
 	else {
@@ -848,8 +861,8 @@ bool Queue_IsEmpty(Queue* obj) {
 }
 
 /// <summary>высвобождает память всех узлов очереди и самой очереди</summary>
-void Queue_Dispose(Queue* obj) {
-	if (obj->front != NULL) NodeChain_Dipose(obj->front);
+void Queue_Dispose(Queue* obj, void(*disposeValues)(void*)) {
+	if (obj->front != NULL) NodeChain_Dipose(obj->front, disposeValues);
 	free(obj);
 }
 
@@ -859,7 +872,7 @@ void Queue_Dispose(Queue* obj) {
 
 
 /// <summary>создает новый список в динамической памяти</summary>
-/// <param name="capacity">начальная вместимость списка</param>
+/// <param name="capacity">- начальная вместимость списка</param>
 List* NewList(size_t elSize, unsigned int capacity) {
 	List* listObj = (List*)malloc(sizeof(List));
 	if (listObj != NULL) {
@@ -872,6 +885,7 @@ List* NewList(size_t elSize, unsigned int capacity) {
 }
 
 /// <summary>пересоздает список, удваивая вместимость</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int List_RefactorList(List* obj) {
 	void* newpool = realloc(obj->arr, 2 * obj->capacity * obj->elSize);
 	if (newpool == NULL) return 1;
@@ -883,6 +897,7 @@ int List_RefactorList(List* obj) {
 }
 
 /// <summary>добавляет запись в конец списка</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int List_AddTo(List* obj, const void* newValue) {
 	if (obj->last + 1 == obj->capacity) {
 		if (List_RefactorList(obj)) return 1;
@@ -893,6 +908,7 @@ int List_AddTo(List* obj, const void* newValue) {
 }
 
 /// <summary>вставляет запись в список</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int List_InsertInto(List* obj, const void* newValue, unsigned int atIndex) {
 	if (atIndex > obj->last) return 1;
 
@@ -902,6 +918,7 @@ int List_InsertInto(List* obj, const void* newValue, unsigned int atIndex) {
 }
 
 /// <summary>удаляет запись из списка</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int List_RemoveFrom(List* obj, unsigned int atIndex) {
 	if (atIndex > obj->last) return 1;
 
@@ -913,11 +930,12 @@ int List_RemoveFrom(List* obj, unsigned int atIndex) {
 /// <summary>осуществляет доступ к элементу</summary>
 /// <returns>указатель на начало элемента</returns>
 void* List_AccessAt(List* obj, unsigned int atIndex) {
-	return (void*)((char*)(obj->arr) + atIndex * obj->elSize);
+	if (atIndex > obj->last) return NULL;
+	else return (void*)((char*)(obj->arr) + atIndex * obj->elSize);
 }
 
 bool List_IsEmpty(List* obj) {
-	return obj->last < 0 ? true : false;
+	return obj->last < 0; // ? true : false;
 }
 
 int List_Count(List* obj) {
@@ -925,7 +943,13 @@ int List_Count(List* obj) {
 }
 
 /// <summary>высвободжает память массива списка и самого списка</summary>
-void List_Dispose(List* obj) {
+void List_Dispose(List* obj, void(*disposeValues)(void*)) {
+	if (disposeValues != NULL) {
+		int i;
+		for (i = 0; i <= obj->last; i++) {
+			disposeValues((void**)obj->arr + i);
+		}
+	}
 	free(obj->arr);
 	free(obj);
 }
@@ -936,7 +960,7 @@ void List_Dispose(List* obj) {
 
 
 /// <summary>создает новую очередь в динамической памяти</summary>
-/// <param name="capacity">начальная вместимость очереди</param>
+/// <param name="capacity">- начальная вместимость очереди</param>
 QueueArr* NewQueueArr(size_t elSize, unsigned int capacity) {
 	QueueArr* res = (QueueArr*)malloc(sizeof(QueueArr));
 	if (res != NULL) {
@@ -949,6 +973,7 @@ QueueArr* NewQueueArr(size_t elSize, unsigned int capacity) {
 }
 
 /// <summary>пересоздает очередь, удваивая вместимость</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int QueueArr_RefactorArray(QueueArr* obj) {
 	void* newpool = malloc(2 * obj->capacity * obj->elSize);
 	if (newpool == NULL) return 1;
@@ -968,6 +993,7 @@ int QueueArr_RefactorArray(QueueArr* obj) {
 }
 
 /// <summary>"ставит" значение в очередь</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int QueueArr_Enqueue(QueueArr* obj, const void* newValue) {
 	if (obj->rear < 0) {
 		obj->front = obj->rear = 0;
@@ -989,6 +1015,7 @@ void* QueueArr_Peek(QueueArr* obj) {
 }
 
 /// <summary>"достает" значение из очереди</summary>
+/// <returns>0 - успешно; 1 - ошибка</returns>
 int QueueArr_Dequeue(QueueArr* obj, void* targetVariable) {
 	if (obj->front < 0) return 1;
 	AssignValue(targetVariable, (char*)obj->arr + obj->front * obj->elSize, obj->elSize);

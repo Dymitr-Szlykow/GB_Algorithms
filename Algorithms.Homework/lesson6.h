@@ -40,26 +40,36 @@ inline void PrintValue_ToInt(const void* value);
 inline int WriteIntValue(const void* value, char* targetString);
 
 // T R E E  N O D E
-TreeNode* NewTreeNode(const void* value, size_t valSize);
-int Subtree_GetTreeHeight(TreeNode* root); // ~ O(root.count)
-void Subtree_TraversalPreorder(TreeNode* root, void (*action)(void*)); // ~ O(root.count * O(action()))
-void Subtree_TraversalInorder(TreeNode* root, void (*action)(void*)); // ~ O(root.count * O(action()))
-void Subtree_TraversalPostorder(TreeNode* root, void (*action)(void*)); // ~ O(root.count * O(action()))
-void Subtree_TraversalLevelorder(TreeNode* root, void (*action)(void*)); // по времени ~ O(root.count * O(action())) ; по памяти ~ O(root.count) <- O(root.count/2)
+TreeNode* NewTreeNode(const void* value, size_t valSize);                   // = O(malloc(valSize)) + O(AssignValue()) --> O(valSize)
+int Subtree_GetTreeHeight(TreeNode* root);                                  // = O(root.count)
+void Subtree_TraversalPreorder(TreeNode* root, void (*action)(void*));      // по времени = O(root.count) * O(action()) ; по памяти = O(root.height)
+void Subtree_TraversalInorder(TreeNode* root, void (*action)(void*));       // по времени = O(root.count) * O(action()) ; по памяти = O(root.height)
+void Subtree_TraversalPostorder(TreeNode* root, void (*action)(void*));     // по времени = O(root.count) * O(action()) ; по памяти = O(root.height)
+void Subtree_TraversalLevelorder(TreeNode* root, void (*action)(void*));    // по времени = O(root.count) * O(action()) ; по памяти = O(root.count/2) = O(root.count)
+bool Subtree_ISBinarySearchTree(TreeNode* root, void* lowerBound, void* upperBound, int (*compare)(const void*, const void*));
+  // по времени = O(root.count) * O(compare()) ; по памяти = O(root.height)
+void Subtree_DisposeBranches(TreeNode* node);                               // = O(node.descendants.count)
+void Subtree_Dispose(TreeNode* node);                                       // = O(node.descendants.count)
+
 void Subtree_PrintParenthesesForm(TreeNode* obj, void (*printValueMethod)(const void*));
 void Subtree_WriteParenthesesForm(TreeNode* obj, int (*writeValueMethod)(const void*, char*), char** targetString); // broken
 TreeNode* Subtree_ReadParenthesesForm(char* sourceString, void (*readValueMethod)(const void*)); // TODO
-void Subtree_DisposeBranches(TreeNode* node);
-void Subtree_Dispose(TreeNode* node);
 
 // B I N A R Y  T R E E
 TreeNode* Tree_AccessNode(Tree* tree, char* accessCode);
+void Tree_Dispose(Tree* obj);
+bool Tree_IsBinarySearchTree_Int(Tree* obj); // = O(Subtree_ISBinarySearchTree())
 
 // B I N A R Y  S E A R C H  T R E E
 int BST_Insert(Tree* obj, const void* newValue, int(*compareMethod)(const void*, const void*));
-TreeNode* BSSubtree_Add(TreeNode* root, const void* newValue, size_t valSize, int(*compareMethod)(const void*, const void*));
-TreeNode* BST_Search(TreeNode* root, const void* searchValue, int(*compareMethod)(const void*, const void*));
-TreeNode* BSSubtree_GetMinElement(TreeNode* root);
-TreeNode* BSSubtree_GetMaxElement(TreeNode* root);
+TreeNode* BSSubtree_Add(TreeNode* root, const void* newValue, size_t valSize, int(*compare)(const void*, const void*));
+TreeNode* BSSubtree_DeleteElement(TreeNode* root, const void* value, int (*compare)(const void*, const void*));
+TreeNode* BSSubtree_GetClosestMutualAncestor_1(TreeNode* root, const void* one, const void* another, int(*compare)(const void*, const void*)); // = O(2 * root.height) = O(root.height)
+TreeNode* BSSubtree_GetClosestMutualAncestor_2(TreeNode* root, const void* one, const void* another, int(*compare)(const void*, const void*)); //  -//-
+TreeNode* BSSubtree_GetInorderSuccessor_1(TreeNode* root, const void* value, int(*compare)(const void*, const void*));
+TreeNode* BSSubtree_GetInorderSuccessor_2(TreeNode* root, const void* value, int(*compare)(const void*, const void*));
+TreeNode* BSSubtree_GetMinElement(TreeNode* root); // = O(root.height)
+TreeNode* BSSubtree_GetMaxElement(TreeNode* root); // = O(root.height)
+TreeNode* BSSubtree_Search(TreeNode* root, const void* searchValue, int(*compare)(const void*, const void*));
 
 #endif
