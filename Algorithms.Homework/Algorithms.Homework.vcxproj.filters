@@ -15,14 +15,55 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
-    <ClCompile Include="lesson1.c">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
     <ClCompile Include="lesson2.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="lesson3.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="lesson1.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="lesson4.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="lesson5.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="lesson6_trees.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="lesson7_graphs.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lesson1.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="lesson2.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="lesson3.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="lesson4.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="lesson5.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="lesson6.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="lesson7.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

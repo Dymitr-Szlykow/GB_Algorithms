@@ -3,62 +3,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include "lesson1.h"
 
-//#pragma warning(disable : 4996)
+#pragma warning(disable : 4996)
+#pragma warning(disable : 6031)
 
 #define bool int
 #define true 1
 #define false 0
 
 
-void Task_1_1(void);
-
-void Task_1_2(void);
-void Task_1_2a(void);
-void Task_1_2b(void);
-double GreatestOfFour_ReverseTree(double a, double b, double c, double d);
-double GreatestOfFour_HeadOn(double a, double b, double c, double d);
-void ReadGreaterNum(char* message, double* res);
-
-void Task_1_3(void);
-void Swap_withTemp(int* x, int* y);
-void Swap_sum(int* x, int* y);
-void SwapIntegers_binary(int* x, int* y);
-
-void Task_1_4(void);
-typedef struct coefs Coefs;
-char* SqEquation_print(Coefs c);
-int SqEquation_solve(Coefs c, double* x1, double* x2, double* D);
-
-void Task_1_7(void);
-typedef struct chessCell ChessCell;
-ChessCell NewCell(unsigned int rank, unsigned int file);
-ChessCell ReadCell(char* message);
-char* CellColor_ToString(ChessCell c);
-
-void Task_1_13(void);
-void Task_1_13a(int count);
-void Task_1_13b(int count);
-int GetSystemRand(int digits);
-void BootMyRand(unsigned int starter);
-int GetMyRand(void);
-
-void Task_1_14(void);
-bool IfAutomorph(int num);
-
-
-struct coefs {
-	double A, B, C;
-};
-
-struct chessCell {
-	unsigned char rank, file;
-	bool IsWhite;
-};
-
-
 /// <summary>
-/// Ввести вес и рост человека. Рассчитать и вывести индекс массы тела по формуле I=m/(h*h); где m-масса тела в килограммах, h - рост в метрах.
+/// 1. Ввести вес и рост человека. Рассчитать и вывести индекс массы тела по формуле I=m/(h*h); где m-масса тела в килограммах, h - рост в метрах.
 /// </summary>
 void Task_1_1() {
 	double bodyHeight, bodyWeight, temp;
@@ -101,7 +58,7 @@ void Task_1_1() {
 
 
 /// <summary>
-/// Найти максимальное из четырех чисел. Массивы не использовать.
+/// 2. Найти максимальное из четырех чисел. Массивы не использовать.
 /// </summary>
 void Task_1_2() {
 	Task_1_2a();
@@ -157,9 +114,9 @@ void ReadGreaterNum(char* message, double* res) {
 
 
 /// <summary>
-/// Написать программу обмена значениями двух целочисленных переменных:
-/// a. с использованием третьей переменной;
-/// b. *без использования третьей переменной.
+/// 3. Написать программу обмена значениями двух целочисленных переменных:
+/// a) с использованием третьей переменной;
+/// b) *без использования третьей переменной.
 /// </summary>
 void Task_1_3() {
 	int a, b;
@@ -196,7 +153,7 @@ void SwapIntegers_binary(int* x, int* y) {
 
 
 /// <summary>
-/// Написать программу нахождения корней заданного квадратного уравнения.
+/// 4. Написать программу нахождения корней заданного квадратного уравнения.
 /// </summary>
 void Task_1_4() {
 	double x1, x2, D;
@@ -217,7 +174,7 @@ void Task_1_4() {
 	printf("  C = ");
 	scanf("%lf", &c.C);
 
-	printf("%s", SqEquation_print(c));
+	SqEquation_print(c);
 	hasRoots = SqEquation_solve(c, &x1, &x2, &D);
 
 	printf("Дескрименант равен %.3lf. ", D);
@@ -233,50 +190,45 @@ void Task_1_4() {
 		printf("Уравнение не имеет корней.\n");
 }
 
-char* SqEquation_print(Coefs c) {
-	char res[64] = "", temp[16];
-
-	sprintf(res, "%.2lf*x^2", c.A);
+void SqEquation_print(Coefs c) {
+	printf("%.2lf*x^2", c.A);
 
 	if (c.B != 0) {
-		strcat(res, c.B < 0 ? " - " : " + ");
+		printf("%s", c.B < 0 ? " - " : " + ");
 		if (c.B == 1 || c.B == -1)
-			sprintf(temp, "x");
+			printf("x");
 		else
-			sprintf(temp, "%.2lfx", fabs(c.B));
-		strcat(res, temp);
+			printf("%.2lfx", fabs(c.B));
 	}
 
 	if (c.C != 0) {
-		sprintf(temp, "%s%.2lf", c.C < 0 ? " - " : " + ", fabs(c.C));
-		strcat(res, temp);
+		printf("%s%.2lf", c.C < 0 ? " - " : " + ", fabs(c.C));
 	}
-	strcat(res, " = 0\n");
-	return res;
+	printf(" = 0\n");
 }
 
-int SqEquation_solve(Coefs c, double* x1, double* x2, double* D)
+int SqEquation_solve(Coefs c, double* out_x1, double* out_x2, double* out_D)
 {
-	*D = c.B * c.B - 4 * c.A * c.C;
+	*out_D = c.B * c.B - 4 * c.A * c.C;
 
-	if (D < 0) {
+	if (*out_D < 0) {
 		return -1;
 	}
-	else if (D > 0) {
-		*x1 = (-c.B - sqrt(*D)) / 2 / c.A;
-		*x2 = (-c.B + sqrt(*D)) / 2 / c.A;
+	else if (*out_D > 0) {
+		*out_x1 = (-c.B - sqrt(*out_D)) / 2 / c.A;
+		*out_x2 = (-c.B + sqrt(*out_D)) / 2 / c.A;
 		return 1;
 	}
 	else {
-		*x1 = -c.B / 2 / c.A;
-		*x2 = *x1;
+		*out_x2 = *out_x1 = -c.B / 2 / c.A;
 		return 0;
 	}
 }
 
 
 /// <summary>
-/// С клавиатуры вводятся числовые координаты двух полей шахматной доски (x1,y1,x2,y2). Требуется определить, относятся поля к одному цвету или нет.
+/// 7. С клавиатуры вводятся числовые координаты двух полей шахматной доски (x1,y1,x2,y2).
+/// Требуется определить, относятся поля к одному цвету или нет.
 /// </summary>
 void Task_1_7() {
 	ChessCell c1 = ReadCell("первой клетки");
@@ -328,7 +280,7 @@ ChessCell ReadCell(char* message) {
 
 
 /// <summary>
-/// Написать функцию, генерирующую случайное число от 1 до 100.
+/// 13. Написать функцию, генерирующую случайное число от 1 до 100.
 /// а) с использованием стандартной функции rand()
 /// б) без использования стандартной функции rand()
 /// </summary>
@@ -359,7 +311,7 @@ void Task_1_13b(int count) {
 
 int GetSystemRand(int digits) {
 	int i, base = 1;
-	for (int i = 1; i <= digits; i++) {
+	for (i = 1; i <= digits; i++) {
 		base *= 10;
 	}
 	return (rand() % base);
@@ -380,7 +332,7 @@ int GetMyRand() {
 
 
 /// <summary>
-/// Автоморфные числа. Натуральное число называется автоморфным, если оно равно последним цифрам своего квадрата. Например, 252 = 625.
+/// 14. Автоморфные числа. Натуральное число называется автоморфным, если оно равно последним цифрам своего квадрата. Например, 252 = 625.
 /// Напишите программу, которая вводит натуральное число N и выводит на экран все автоморфные числа, не превосходящие N.
 /// </summary>
 void Task_1_14() {
@@ -390,12 +342,12 @@ void Task_1_14() {
 
 	printf("автоморфные числа меньше введенного:\n");
 	for (num = 1; num < upto; num++) {
-		if (IfAutomorph(num))
+		if (IsAutomorph(num))
 			printf(" %lu ^2 = %.0lf \n", num, pow(num, 2));
 	}
 }
 
-bool IfAutomorph(int num) {
+bool IsAutomorph(int num) {
 	long int sq;
 	sq = pow(num, 2);
 	while (num) {
